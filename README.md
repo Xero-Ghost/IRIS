@@ -102,15 +102,15 @@ Future updates will contain the real computation.
 <br>
 📂 Files Overview
 versions/
-│── prototype.py              # Vehicle detection + ROI + counting
-│── traffic_cycle.py          # Traffic timer calculator
-│── green_time_simulation.py  # Backend logic for timing
-│── video2.mp4                # Sample test video
-│── vehicle_detector.py       # YOLO detection wrapper
-│── vehicle_tracker.py        # Tracking logic
-│── manual_roi_selector.py    # Interactive ROI selector
-│── config.py                 # Configurations
-│── vehicle_data.txt          # Output data file (1 line, must be edited)
+│── prototype.py              # Vehicle detection + ROI + counting<br>
+│── traffic_cycle.py          # Traffic timer calculator<br>
+│── green_time_simulation.py  # Backend logic for timing<br>
+│── video2.mp4                # Sample test video<br>
+│── vehicle_detector.py       # YOLO detection wrapper<br>
+│── vehicle_tracker.py        # Tracking logic<br>
+│── manual_roi_selector.py    # Interactive ROI selector<br>
+│── config.py                 # Configurations<br>
+│── vehicle_data.txt          # Output data file (1 line, must be edited)<br>
 
 <br>
 ⛔ Current Limitations
