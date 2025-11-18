@@ -1,57 +1,62 @@
 IRIS – Intelligent Roadway Infrastructure System (Prototype)
 
-A basic computer-vision prototype for detecting vehicles from a CCTV feed, counting them inside a selected ROI, and generating a simple traffic-light cycle timing.
+A basic computer-vision prototype for detecting vehicles from CCTV feeds, counting traffic inside a selected ROI, and generating a simple traffic-light timing cycle.
 
-How the Current Version Works
+🚀 How the Current Version Works
 
-The prototype runs in two steps:
+The workflow runs in two steps:
 
-Vehicle Counting (prototype.py)
+Vehicle Counting → prototype.py
 
-Traffic Timer Calculation (traffic_cycle.py)
+Traffic Timer Calculation → traffic_cycle.py
 
-Each step must be executed manually.
+<br>
+🟩 Step 1: Run Vehicle Detection & Counting
 
-Step 1: Run Vehicle Detection & Counting
-
-Inside the versions/ folder, run:
+Navigate to the versions/ folder and run:
 
 python prototype.py
 
+✔ What this does:
 
-What happens:
+Loads the sample video video2.mp4
 
-The sample video video2.mp4 loads
+Shows the first frame and asks you to select an ROI (Region of Interest)
 
-You select a Region of Interest (ROI) using your mouse
+Detects & tracks vehicles using YOLO
 
-The system:
+Counts:
 
-detects vehicles
+Two-wheelers
 
-tracks them
+Light Motor Vehicles
 
-counts two-wheelers, LMVs, and HMVs inside the ROI
+Heavy Motor Vehicles
 
-The result is saved into a file:
+Saves the output to:
 
 vehicle_data.txt
 
-
-Important:
-This version supports only one input video and one ROI, so the file will contain ONE line like:
-
+<br>
+📌 Generated Output Example
 2,5,1
 
 
 (two-wheelers, LMVs, HMVs)
 
-Step 2: Prepare vehicle_data.txt for Timer Calculation
+<br>
+⚠️ Important Limitation (Current Version)
 
-The timer code (traffic_cycle.py) requires 4 lines of vehicle data (one for each traffic phase).
+The current prototype supports only one input video and one ROI selection.
 
-Since the current prototype only generates one line,
-you must manually edit the file and add four lines, for example:
+Therefore, it generates only one line in vehicle_data.txt.
+
+However, the timing calculator (traffic_cycle.py) requires 4 lines (one for each phase).
+
+<br>
+📝 Step 2: Manually Prepare vehicle_data.txt
+
+Before running the timer, edit vehicle_data.txt so it contains four lines, like:
 
 2,5,1
 2,5,1
@@ -59,76 +64,84 @@ you must manually edit the file and add four lines, for example:
 2,5,1
 
 
-Or write any other values you want to test.
+or write different values for each phase.
 
-Step 3: Run Traffic Timer
+<br>
+🟧 Step 3: Run the Traffic Signal Timer
 
 Run:
 
 python traffic_cycle.py
 
+✔ This will calculate:
 
-This will calculate:
+Green time (G)
 
-Green time
+Yellow time (Y)
 
-Yellow time
+Red time (R)
 
-Red time
+Clearance % (placeholder)
 
-Clearance percentage (currently placeholder)
+<br>
+🛑 Clearance Value Notice
 
-Note About Clearance Calculation
-
-The clearance (%) shown in the output is not functional yet.
+The Clearance (%) shown in the output is not functional yet.
 
 It is currently manually set to 80 percent
 
-The algorithm for real clearance calculation is not implemented
+Real clearance calculation logic is not implemented in this version
 
-You will see values like:
+You will see values such as:
 
 Clearance (%): 80.00
 
 
-This will be updated in future versions.
+Future updates will contain the real computation.
 
-Limitations of Current Prototype
+<br>
+📂 Files Overview
+versions/
+│── prototype.py              # Vehicle detection + ROI + counting
+│── traffic_cycle.py          # Traffic timer calculator
+│── green_time_simulation.py  # Backend logic for timing
+│── video2.mp4                # Sample test video
+│── vehicle_detector.py       # YOLO detection wrapper
+│── vehicle_tracker.py        # Tracking logic
+│── manual_roi_selector.py    # Interactive ROI selector
+│── config.py                 # Configurations
+│── vehicle_data.txt          # Output data file (1 line, must be edited)
+
+<br>
+⛔ Current Limitations
 
 Only one ROI and one video per run
 
 Only one line of vehicle data generated
 
-User must manually create 4 lines for timer testing
+Must manually duplicate/edit data to create 4-phase input
 
 Clearance value is hard-coded
 
-No real-time CCTV support yet
+No real-time CCTV input
 
-No reinforcement-learning module yet
+RL-based optimization not added yet
 
-Files Needed
+<br>
+🛣️ Planned Upgrades
 
-prototype.py → vehicle detection & counting
+Multi-ROI & automatic multi-phase data generation
 
-traffic_cycle.py → traffic signal timer
+Real CCTV RTSP stream support
 
-video2.mp4 → sample video
+RL-based adaptive traffic control
 
-vehicle_data.txt → created automatically, then manually edited
-
-green_time_simulation.py → backend timing logic
-
-Next Steps (Planned)
-
-Multi-phase detection (auto-generate all 4 lines)
-
-Auto-ROI or lane detection
-
-Live CCTV input
+Auto lane detection & smart ROI
 
 Real clearance calculation
 
-Reinforcement Learning optimization
+Multi-intersection network optimization
 
-Multi-intersection networking
+Web dashboard & analytics
+
+<br>
