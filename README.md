@@ -101,7 +101,7 @@ Future updates will contain the real computation.
 
 <br>
 📂 Files Overview
-versions/
+versions/<br>
 │── prototype.py              # Vehicle detection + ROI + counting<br>
 │── traffic_cycle.py          # Traffic timer calculator<br>
 │── green_time_simulation.py  # Backend logic for timing<br>
