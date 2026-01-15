@@ -1,0 +1,331 @@
+.corridor-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+}
+
+/* Junction Grid */
+.map-grid-card {
+    padding: 24px;
+}
+
+.junction-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.grid-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.junction-node {
+    width: 72px;
+    height: 72px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--bg-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+}
+
+.junction-node:hover:not(:disabled) {
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+.junction-node:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.junction-node.selected {
+    background: var(--primary-light);
+    border-color: var(--primary);
+}
+
+.junction-node.corridor-active {
+    background: var(--success-light);
+    border-color: var(--success);
+    animation: pulse-green 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-green {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(22, 163, 74, 0);
+    }
+}
+
+.junction-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.junction-order {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Legend */
+.map-legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+}
+
+.legend-dot.normal {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+}
+
+.legend-dot.selected {
+    background: var(--primary-light);
+    border: 1px solid var(--primary);
+}
+
+.legend-dot.corridor-active {
+    background: var(--success-light);
+    border: 1px solid var(--success);
+}
+
+/* Controls Panel */
+.corridor-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.empty-message {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    padding: 16px;
+    text-align: center;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+/* Selected Route */
+.selected-route {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.route-node {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.route-number {
+    width: 24px;
+    height: 24px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.route-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.route-arrow {
+    color: var(--text-muted);
+    margin: 0 4px;
+}
+
+/* Duration Options */
+.duration-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.duration-btn {
+    padding: 8px 16px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    transition: all var(--transition);
+}
+
+.duration-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.duration-btn.active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.duration-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Generate Button */
+.generate-btn {
+    width: 100%;
+}
+
+.generate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Active Corridor Card */
+.active-corridor-card {
+    background: var(--success-light);
+    border-color: var(--success);
+}
+
+.corridor-status {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.status-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.status-icon {
+    color: var(--success);
+}
+
+.status-header h4 {
+    font-size: 1rem;
+    color: var(--success);
+    margin-bottom: 2px;
+}
+
+.status-header p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.status-info {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: var(--radius);
+    font-size: 0.8125rem;
+    color: var(--text-primary);
+}
+
+.status-info svg {
+    color: var(--warning);
+    flex-shrink: 0;
+}
+
+/* Confirm Modal */
+.confirm-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.confirm-route,
+.confirm-duration {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+}
+
+.confirm-route svg,
+.confirm-duration svg {
+    color: var(--primary);
+}
+
+.confirm-warning {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: var(--warning-light);
+    border-radius: var(--radius);
+    font-size: 0.8125rem;
+    color: var(--text-primary);
+}
+
+.confirm-warning svg {
+    color: var(--warning);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+@media (max-width: 1024px) {
+    .corridor-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .junction-node {
+        width: 56px;
+        height: 56px;
+    }
+}

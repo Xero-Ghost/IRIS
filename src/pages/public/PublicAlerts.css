@@ -1,0 +1,132 @@
+.public-alerts {}
+
+/* Active Alert Banner */
+.active-alert-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--danger-light);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+    color: var(--danger);
+}
+
+/* Incidents List */
+.incidents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.incident-card {
+    padding: 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--danger);
+}
+
+.incident-card.resolved {
+    border-left-color: var(--success);
+    opacity: 0.8;
+}
+
+.incident-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.incident-type {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.incident-card.active .incident-type {
+    color: var(--danger);
+}
+
+.status-badge {
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    color: var(--danger);
+}
+
+.status-badge.resolved {
+    color: var(--success);
+}
+
+.incident-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.detail-row svg {
+    color: var(--text-muted);
+}
+
+.incident-advice {
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+/* No Incidents */
+.no-incidents {
+    text-align: center;
+    padding: 48px;
+    background: var(--success-light);
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+}
+
+.no-incidents svg {
+    color: var(--success);
+    margin-bottom: 16px;
+}
+
+.no-incidents h3 {
+    color: var(--success);
+    margin-bottom: 8px;
+}
+
+.no-incidents p {
+    color: var(--text-secondary);
+}
+
+/* Note */
+.public-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}

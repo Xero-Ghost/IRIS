@@ -1,0 +1,269 @@
+.live-traffic-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    height: calc(100vh - 180px);
+}
+
+/* Junction Panel */
+.junctions-panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.panel-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+}
+
+.search-box input {
+    flex: 1;
+    border: none;
+    background: none;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    outline: none;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-group .form-select {
+    flex: 1;
+}
+
+.junctions-scroll {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.junction-card {
+    padding: 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.junction-card:hover {
+    border-color: var(--border-hover);
+}
+
+.junction-card.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.junction-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.junction-title {
+    flex: 1;
+}
+
+.junction-title h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.junction-title span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.junction-flow {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.junction-mini-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.mini-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+/* Junction Details */
+.junction-details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.details-header-card {
+    padding: 20px;
+}
+
+.details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.details-header h2 {
+    font-size: 1.25rem;
+    margin-bottom: 4px;
+}
+
+.details-header p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Vehicle Count Cards */
+.vehicle-counts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.vehicle-count-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.vehicle-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.two-wheeler .vehicle-icon {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.light-vehicle .vehicle-icon {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.heavy-vehicle .vehicle-icon {
+    background: #f3e8ff;
+    color: #9333ea;
+}
+
+.vehicle-info h3 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.vehicle-count {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.vehicle-info span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Camera Feed */
+.camera-feed-card {
+    flex: 1;
+}
+
+.camera-feed-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.live-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--danger);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.camera-placeholder {
+    height: 200px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.camera-placeholder p {
+    font-size: 0.875rem;
+    margin-bottom: 4px;
+}
+
+.camera-placeholder span {
+    font-size: 0.75rem;
+}
+
+@media (max-width: 1024px) {
+    .live-traffic-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .junctions-panel {
+        max-height: 400px;
+    }
+
+    .vehicle-counts-grid {
+        grid-template-columns: 1fr;
+    }
+}

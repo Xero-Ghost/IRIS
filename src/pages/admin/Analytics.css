@@ -1,0 +1,172 @@
+.analytics-stats {
+    margin-bottom: 24px;
+}
+
+.date-filter .form-select {
+    width: auto;
+    min-width: 150px;
+}
+
+/* Analytics Grid */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.chart-card {
+    min-height: 320px;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 16px;
+}
+
+.chart-legend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.chart-legend .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.chart-legend .dot.primary {
+    background: var(--primary);
+}
+
+.chart-legend .dot.muted {
+    background: var(--text-muted);
+}
+
+.chart-placeholder {
+    height: 240px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.chart-placeholder svg {
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.chart-placeholder p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.chart-placeholder span {
+    font-size: 0.75rem;
+}
+
+/* Ranking List */
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.ranking-item .rank {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    width: 32px;
+}
+
+.ranking-item .name {
+    flex: 1;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.ranking-item .improvement {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.ranking-item .improvement.positive {
+    color: var(--success);
+}
+
+/* Impact Stats */
+.impact-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.impact-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.impact-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--success-light);
+    color: var(--success);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.impact-icon.fuel {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.impact-icon.time {
+    background: var(--warning-light);
+    color: var(--warning);
+}
+
+.impact-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.impact-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.impact-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 1024px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}

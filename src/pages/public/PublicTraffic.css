@@ -1,0 +1,213 @@
+.public-traffic {}
+
+.public-page-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.public-page-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 8px;
+}
+
+.public-page-header p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+/* Public Stats */
+.public-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.public-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.public-stat-card .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.public-stat-card .stat-icon.warning {
+    background: var(--warning-light);
+    color: var(--warning);
+}
+
+.public-stat-card .stat-icon.primary {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.public-stat-card .stat-icon.success {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.public-stat-card .stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.public-stat-card .stat-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+/* Legend */
+.traffic-legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+}
+
+.traffic-legend span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.traffic-legend .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.traffic-legend .dot.low {
+    background: var(--success);
+}
+
+.traffic-legend .dot.medium {
+    background: var(--warning);
+}
+
+.traffic-legend .dot.high {
+    background: var(--danger);
+}
+
+/* Junction Grid */
+.junction-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.junction-status-card {
+    padding: 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--border-color);
+}
+
+.junction-status-card.low {
+    border-left-color: var(--success);
+}
+
+.junction-status-card.medium {
+    border-left-color: var(--warning);
+}
+
+.junction-status-card.high {
+    border-left-color: var(--danger);
+    background: #fef2f2;
+}
+
+.junction-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.traffic-badge {
+    padding: 4px 10px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.traffic-badge.success {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.traffic-badge.warning {
+    background: var(--warning-light);
+    color: var(--warning);
+}
+
+.traffic-badge.danger {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.wait-time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+.junction-status-card .junction-name {
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.junction-status-card .junction-id {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+/* Note */
+.public-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .public-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .traffic-legend {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+}

@@ -1,0 +1,125 @@
+.signal-control-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+}
+
+.junctions-table-card {
+    overflow: hidden;
+}
+
+.junctions-table-card .table tbody tr {
+    cursor: pointer;
+}
+
+.junctions-table-card .table tbody tr.selected {
+    background: var(--primary-light);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    transition: all var(--transition);
+}
+
+.icon-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.icon-btn.danger:hover {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+/* Junction Config */
+.junction-config {
+    height: fit-content;
+}
+
+.config-section {
+    margin-bottom: 24px;
+}
+
+.config-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.phases-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.phase-item {
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.phase-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.phase-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.config-actions {
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Modal Tweaks */
+.modal-lg {
+    max-width: 600px;
+}
+
+.form-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.form-section h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.phases-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 1024px) {
+    .signal-control-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .junction-config {
+        order: -1;
+    }
+}
