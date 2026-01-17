@@ -1,0 +1,15 @@
+{
+    "timestamp": "20260117_234323",
+    "roi_coordinates": [
+        85,
+        34,
+        488,
+        369
+    ],
+    "vehicle_counts": {
+        "motorcycle": 0,
+        "lmv": 7,
+        "hmv": 0
+    },
+    "total_vehicles": 7
+}
