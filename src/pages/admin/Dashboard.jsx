@@ -5,10 +5,28 @@ import {
     AlertTriangle,
     TrendingDown,
     TrendingUp,
-    ArrowRight
+    ArrowRight,
+    MapPin,
+    Phone,
+    Clock,
+    Car,
+    Shield,
+    AlertCircle
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from 'react-leaflet'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import './Dashboard.css'
+
+// Custom accident icon
+const accidentIcon = L.divIcon({
+    className: 'accident-marker-icon',
+    html: `<div class="accident-pulse"></div><div class="accident-icon">⚠️</div>`,
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+    popupAnchor: [0, -20]
+})
 
 // Sample data for demonstration
 const stats = [
@@ -37,11 +55,11 @@ const stats = [
         trend: 'positive'
     },
     {
-        label: 'Incidents Today',
-        value: '3',
+        label: 'Active Accidents',
+        value: '2',
         icon: AlertTriangle,
-        type: 'warning',
-        change: '2 resolved',
+        type: 'danger',
+        change: '1 resolved today',
         trend: 'neutral'
     },
 ]
@@ -59,6 +77,65 @@ const topJunctions = [
     { id: 'J-031', name: 'Industrial Area', vehicleCount: 720, status: 'red' },
 ]
 
+// Junction markers for OpenStreetMap (Bangalore coordinates)
+const mapJunctions = [
+    { id: 'J-001', name: 'City Center', lat: 12.9716, lng: 77.5946, status: 'green', vehicles: 1250 },
+    { id: 'J-002', name: 'MG Road Crossing', lat: 12.9756, lng: 77.6066, status: 'red', vehicles: 980, hasAccident: true },
+    { id: 'J-003', name: 'Railway Station', lat: 12.9779, lng: 77.5728, status: 'green', vehicles: 875 },
+    { id: 'J-004', name: 'Industrial Area', lat: 12.9850, lng: 77.6150, status: 'yellow', vehicles: 720 },
+    { id: 'J-005', name: 'Hospital Road', lat: 12.9600, lng: 77.5800, status: 'green', vehicles: 650 },
+    { id: 'J-006', name: 'Tech Park Gate', lat: 12.9680, lng: 77.6200, status: 'green', vehicles: 580 },
+    { id: 'J-007', name: 'Stadium Junction', lat: 12.9800, lng: 77.5950, status: 'yellow', vehicles: 520 },
+    { id: 'J-008', name: 'Market Square', lat: 12.9650, lng: 77.5850, status: 'green', vehicles: 490 },
+]
+
+// Map center (Bangalore)
+const mapCenter = [12.9716, 77.5946]
+
+// Get color based on status
+const getStatusColor = (status) => {
+    switch (status) {
+        case 'green': return '#16a34a'
+        case 'yellow': return '#f59e0b'
+        case 'red': return '#dc2626'
+        default: return '#64748b'
+    }
+}
+
+// Active accidents data
+const activeAccidents = [
+    {
+        id: 'A-001',
+        junction: 'MG Road Crossing',
+        junctionId: 'J-002',
+        severity: 4,
+        severityLabel: 'Severe',
+        time: '14:20',
+        description: 'Multi-vehicle collision, injuries reported',
+        ambulanceETA: '3 min',
+        policeETA: '5 min',
+        ambulanceDispatched: true,
+        policeDispatched: true,
+        hospitalName: 'City General Hospital',
+        hospitalPhone: '+91 80 2345 6789'
+    },
+    {
+        id: 'A-002',
+        junction: 'Railway Station Junction',
+        junctionId: 'J-003',
+        severity: 2,
+        severityLabel: 'Moderate',
+        time: '13:45',
+        description: 'Two-wheeler collision, minor injuries',
+        ambulanceETA: '2 min',
+        policeETA: '4 min',
+        ambulanceDispatched: true,
+        policeDispatched: true,
+        hospitalName: 'Apollo Clinic',
+        hospitalPhone: '+91 80 3456 7890'
+    }
+]
+
 export default function Dashboard() {
     return (
         <div className="dashboard">
@@ -68,6 +145,17 @@ export default function Dashboard() {
                     <p className="page-subtitle">Traffic management overview</p>
                 </div>
             </header>
+
+            {/* Active Accidents Alert Banner */}
+            {activeAccidents.length > 0 && (
+                <div className="accidents-banner">
+                    <div className="accidents-banner-header">
+                        <AlertCircle size={20} />
+                        <span>{activeAccidents.length} Active Accident{activeAccidents.length > 1 ? 's' : ''} - Response In Progress</span>
+                        <Link to="/admin/alerts" className="btn btn-sm btn-danger">View Details</Link>
+                    </div>
+                </div>
+            )}
 
             {/* Stats Grid */}
             <div className="grid-4 stats-grid">
@@ -89,9 +177,78 @@ export default function Dashboard() {
                 ))}
             </div>
 
+            {/* Active Accidents Section */}
+            {activeAccidents.length > 0 && (
+                <div className="accidents-section">
+                    <h3 className="section-title">
+                        <AlertTriangle size={20} />
+                        Active Accidents
+                    </h3>
+                    <div className="accidents-grid">
+                        {activeAccidents.map((accident) => (
+                            <div key={accident.id} className={`accident-card severity-${accident.severity}`}>
+                                <div className="accident-card-header">
+                                    <div className="accident-location-info">
+                                        <MapPin size={16} />
+                                        <span>{accident.junction}</span>
+                                    </div>
+                                    <span className="accident-time">
+                                        <Clock size={14} />
+                                        {accident.time}
+                                    </span>
+                                </div>
+
+                                {/* Severity Scale */}
+                                <div className="severity-section">
+                                    <span className="severity-label">Severity Level</span>
+                                    <div className="severity-scale">
+                                        {[1, 2, 3, 4, 5].map((level) => (
+                                            <div
+                                                key={level}
+                                                className={`severity-bar ${level <= accident.severity ? 'active' : ''}`}
+                                            ></div>
+                                        ))}
+                                        <span className="severity-text">{accident.severityLabel}</span>
+                                    </div>
+                                </div>
+
+                                <p className="accident-description">{accident.description}</p>
+
+                                {/* Response Status */}
+                                <div className="response-status">
+                                    <div className={`response-item ${accident.ambulanceDispatched ? 'dispatched' : ''}`}>
+                                        <Car size={16} />
+                                        <div className="response-info">
+                                            <span className="response-type">Ambulance</span>
+                                            <span className="response-eta">ETA: {accident.ambulanceETA}</span>
+                                        </div>
+                                    </div>
+                                    <div className={`response-item ${accident.policeDispatched ? 'dispatched' : ''}`}>
+                                        <Shield size={16} />
+                                        <div className="response-info">
+                                            <span className="response-type">Traffic Police</span>
+                                            <span className="response-eta">ETA: {accident.policeETA}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Hospital Contact */}
+                                <div className="hospital-contact">
+                                    <span className="hospital-name">{accident.hospitalName}</span>
+                                    <a href={`tel:${accident.hospitalPhone}`} className="hospital-phone">
+                                        <Phone size={14} />
+                                        {accident.hospitalPhone}
+                                    </a>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Main Content Grid */}
             <div className="dashboard-grid">
-                {/* Map Preview */}
+                {/* Interactive Map with OpenStreetMap */}
                 <div className="card map-card">
                     <div className="card-header">
                         <h3 className="card-title">City Overview</h3>
@@ -99,11 +256,86 @@ export default function Dashboard() {
                             View Full Map <ArrowRight size={14} />
                         </Link>
                     </div>
-                    <div className="map-placeholder">
-                        <div className="map-message">
-                            <Radio size={48} />
-                            <p>Interactive map showing all 247 active signals</p>
-                            <span>Click "View Full Map" for detailed view</span>
+                    <div className="map-container">
+                        <MapContainer
+                            center={mapCenter}
+                            zoom={14}
+                            style={{ height: '100%', width: '100%' }}
+                            scrollWheelZoom={true}
+                        >
+                            <TileLayer
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            {/* Normal junction markers (non-accident) */}
+                            {mapJunctions.filter(j => !j.hasAccident).map((junction) => (
+                                <CircleMarker
+                                    key={junction.id}
+                                    center={[junction.lat, junction.lng]}
+                                    radius={8}
+                                    fillColor={getStatusColor(junction.status)}
+                                    color="#ffffff"
+                                    weight={2}
+                                    opacity={1}
+                                    fillOpacity={0.8}
+                                >
+                                    <Popup>
+                                        <div className="map-popup">
+                                            <div className="popup-header">
+                                                <span className={`status-dot ${junction.status}`}></span>
+                                                <strong>{junction.name}</strong>
+                                            </div>
+                                            <div className="popup-body">
+                                                <span>ID: {junction.id}</span>
+                                                <span>{junction.vehicles} vehicles/hr</span>
+                                            </div>
+                                        </div>
+                                    </Popup>
+                                </CircleMarker>
+                            ))}
+                            {/* Accident markers with higher priority (rendered on top) */}
+                            {mapJunctions.filter(j => j.hasAccident).map((junction) => (
+                                <Marker
+                                    key={junction.id}
+                                    position={[junction.lat, junction.lng]}
+                                    icon={accidentIcon}
+                                    zIndexOffset={1000}
+                                >
+                                    <Popup>
+                                        <div className="map-popup accident">
+                                            <div className="popup-header accident">
+                                                <span className="accident-badge">⚠️ ACCIDENT</span>
+                                            </div>
+                                            <div className="popup-body">
+                                                <strong>{junction.name}</strong>
+                                                <span>ID: {junction.id}</span>
+                                                <span>{junction.vehicles} vehicles/hr</span>
+                                                <span className="popup-accident">Emergency response active</span>
+                                            </div>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            ))}
+                        </MapContainer>
+
+                        {/* Map Legend */}
+                        <div className="map-legend">
+                            <div className="legend-item">
+                                <span className="legend-dot green"></span>
+                                <span>Normal</span>
+                            </div>
+                            <div className="legend-item">
+                                <span className="legend-dot yellow"></span>
+                                <span>Moderate</span>
+                            </div>
+                            <div className="legend-item">
+                                <span className="legend-dot red"></span>
+                                <span>Heavy</span>
+                            </div>
+                            <div className="legend-item">
+                                <span className="legend-accident">⚠️</span>
+                                <span>Accident</span>
+                            </div>
                         </div>
                     </div>
                 </div>

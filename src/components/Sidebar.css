@@ -9,11 +9,22 @@
     display: flex;
     flex-direction: column;
     z-index: 100;
+    transition: width var(--transition);
+    cursor: pointer;
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width, 72px);
+}
+
+.sidebar.locked {
+    cursor: default;
 }
 
 .sidebar-header {
     padding: 20px;
     border-bottom: 1px solid var(--border-color);
+    position: relative;
 }
 
 .sidebar-logo {
@@ -22,8 +33,13 @@
     gap: 10px;
 }
 
+.sidebar.collapsed .sidebar-logo {
+    justify-content: center;
+}
+
 .logo-icon {
     color: var(--primary);
+    flex-shrink: 0;
 }
 
 .logo-text {
@@ -31,18 +47,42 @@
     font-weight: 700;
     color: var(--text-primary);
     letter-spacing: -0.5px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .sidebar-tagline {
     font-size: 0.75rem;
     color: var(--text-muted);
     margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.lock-indicator {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: all var(--transition);
+}
+
+.sidebar.locked .lock-indicator {
+    color: var(--primary);
 }
 
 .sidebar-nav {
     flex: 1;
     padding: 16px 12px;
     overflow-y: auto;
+}
+
+.sidebar.collapsed .sidebar-nav {
+    padding: 16px 8px;
 }
 
 .nav-list {
@@ -61,6 +101,13 @@
     font-size: 0.875rem;
     font-weight: 500;
     transition: all var(--transition);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding: 12px;
 }
 
 .nav-link:hover {
@@ -78,6 +125,10 @@
     border-top: 1px solid var(--border-color);
 }
 
+.sidebar.collapsed .sidebar-footer {
+    padding: 16px 8px;
+}
+
 .logout-btn {
     display: flex;
     align-items: center;
@@ -89,6 +140,13 @@
     font-size: 0.875rem;
     font-weight: 500;
     transition: all var(--transition);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar.collapsed .logout-btn {
+    justify-content: center;
+    padding: 12px;
 }
 
 .logout-btn:hover {

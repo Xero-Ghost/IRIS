@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Camera, AlertTriangle, Wrench, Clock, MapPin, Eye } from 'lucide-react'
+import { Camera, AlertTriangle, Wrench, Clock, MapPin, Eye, Phone, Building2, Shield, CheckCircle } from 'lucide-react'
 import './Alerts.css'
 
 // Sample violation data with plates and snapshots
@@ -38,37 +38,99 @@ const violationsData = [
     },
 ]
 
-// Sample incident data with images
-const incidentsData = [
+// Sample accident data with severity, hospital and police info
+const initialAccidentsData = [
     {
-        id: 'I-001',
-        type: 'Accident',
+        id: 'A-001',
+        severity: 'Severe',
         junction: 'MG Road Crossing',
         junctionId: 'J-002',
         time: '2024-01-15 14:20:00',
-        status: 'active',
-        description: 'Two-vehicle collision blocking lane 2',
-        snapshot: '/placeholder-accident.jpg'
+        status: 'in-process',
+        description: 'Multi-vehicle collision involving 3 cars, injuries reported',
+        snapshot: '/placeholder-accident-severe.jpg',
+        hospital: {
+            name: 'City General Hospital',
+            location: '2.3 km away - 4th Cross, MG Road',
+            phone: '+91 80 2345 6789',
+            ambulanceDispatched: true
+        },
+        police: {
+            station: 'MG Road Traffic Police Station',
+            location: '1.1 km away - Near Metro Station',
+            officerName: 'Inspector Raj Kumar',
+            phone: '+91 98765 43210',
+            dispatched: true
+        }
     },
     {
-        id: 'I-002',
-        type: 'Traffic Jam',
-        junction: 'Railway Station',
+        id: 'A-002',
+        severity: 'Moderate',
+        junction: 'Railway Station Junction',
         junctionId: 'J-003',
-        time: '2024-01-15 14:05:00',
-        status: 'resolved',
-        description: 'Heavy congestion due to rush hour',
-        snapshot: '/placeholder-traffic.jpg'
+        time: '2024-01-15 13:45:00',
+        status: 'in-process',
+        description: 'Two-wheeler collision with car, minor injuries',
+        snapshot: '/placeholder-accident-moderate.jpg',
+        hospital: {
+            name: 'Apollo Clinic',
+            location: '1.8 km away - Station Road',
+            phone: '+91 80 3456 7890',
+            ambulanceDispatched: true
+        },
+        police: {
+            station: 'Railway Station Traffic Post',
+            location: '0.5 km away - Platform Road',
+            officerName: 'SI Priya Sharma',
+            phone: '+91 98765 12345',
+            dispatched: true
+        }
     },
     {
-        id: 'I-003',
-        type: 'Road Work',
-        junction: 'Industrial Area',
-        junctionId: 'J-004',
-        time: '2024-01-15 09:00:00',
-        status: 'active',
-        description: 'Lane closure for maintenance work',
-        snapshot: '/placeholder-roadwork.jpg'
+        id: 'A-003',
+        severity: 'Minor',
+        junction: 'Tech Park Gate',
+        junctionId: 'J-007',
+        time: '2024-01-15 12:30:00',
+        status: 'resolved',
+        description: 'Fender bender between two cars, no injuries',
+        snapshot: '/placeholder-accident-minor.jpg',
+        hospital: {
+            name: 'Manipal Hospital',
+            location: '3.2 km away - Outer Ring Road',
+            phone: '+91 80 4567 8901',
+            ambulanceDispatched: false
+        },
+        police: {
+            station: 'Whitefield Traffic Police',
+            location: '2.0 km away - ITPL Main Road',
+            officerName: 'Constable Ramesh',
+            phone: '+91 98765 67890',
+            dispatched: true
+        }
+    },
+    {
+        id: 'A-004',
+        severity: 'Severe',
+        junction: 'Hospital Road',
+        junctionId: 'J-005',
+        time: '2024-01-15 11:15:00',
+        status: 'resolved',
+        description: 'Bus and auto-rickshaw collision, multiple injuries',
+        snapshot: '/placeholder-accident-severe2.jpg',
+        hospital: {
+            name: 'Victoria Hospital',
+            location: '0.8 km away - Hospital Road',
+            phone: '+91 80 5678 9012',
+            ambulanceDispatched: true
+        },
+        police: {
+            station: 'City Central Traffic Station',
+            location: '1.5 km away - Gandhi Nagar',
+            officerName: 'Inspector Suresh Patil',
+            phone: '+91 98765 11111',
+            dispatched: true
+        }
     },
 ]
 
@@ -119,13 +181,37 @@ const maintenanceData = [
 export default function Alerts() {
     const [activeTab, setActiveTab] = useState('violations')
     const [selectedItem, setSelectedItem] = useState(null)
+    const [accidentsData, setAccidentsData] = useState(initialAccidentsData)
+
+    const handleUpdateStatus = (accidentId) => {
+        setAccidentsData(prevData =>
+            prevData.map(accident =>
+                accident.id === accidentId
+                    ? { ...accident, status: 'resolved' }
+                    : accident
+            )
+        )
+        // Update selected item as well
+        if (selectedItem?.id === accidentId) {
+            setSelectedItem(prev => ({ ...prev, status: 'resolved' }))
+        }
+    }
+
+    const getSeverityBadgeClass = (severity) => {
+        switch (severity) {
+            case 'Severe': return 'badge-danger'
+            case 'Moderate': return 'badge-warning'
+            case 'Minor': return 'badge-success'
+            default: return 'badge-primary'
+        }
+    }
 
     return (
         <div className="alerts-page">
             <header className="page-header">
                 <div>
                     <h1 className="page-title">Alerts & Notifications</h1>
-                    <p className="page-subtitle">Monitor violations, incidents, and system maintenance</p>
+                    <p className="page-subtitle">Monitor violations, accidents, and system maintenance</p>
                 </div>
             </header>
 
@@ -139,11 +225,11 @@ export default function Alerts() {
                     Violations ({violationsData.length})
                 </button>
                 <button
-                    className={`tab ${activeTab === 'incidents' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('incidents')}
+                    className={`tab ${activeTab === 'accidents' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('accidents')}
                 >
                     <AlertTriangle size={16} />
-                    Incidents ({incidentsData.filter(i => i.status === 'active').length} active)
+                    Accidents ({accidentsData.filter(a => a.status === 'in-process').length} active)
                 </button>
                 <button
                     className={`tab ${activeTab === 'maintenance' ? 'active' : ''}`}
@@ -219,66 +305,166 @@ export default function Alerts() {
                 </div>
             )}
 
-            {/* Incidents Tab */}
-            {activeTab === 'incidents' && (
+            {/* Accidents Tab */}
+            {activeTab === 'accidents' && (
                 <div className="alerts-content">
                     <div className="alerts-list">
-                        {incidentsData.map((incident) => (
+                        {accidentsData.map((accident) => (
                             <div
-                                key={incident.id}
-                                className={`alert-card incident-card ${selectedItem?.id === incident.id ? 'selected' : ''}`}
-                                onClick={() => setSelectedItem(incident)}
+                                key={accident.id}
+                                className={`alert-card accident-card ${selectedItem?.id === accident.id ? 'selected' : ''}`}
+                                onClick={() => setSelectedItem(accident)}
                             >
                                 <div className="alert-card-header">
-                                    <span className={`badge badge-${incident.status === 'active' ? 'danger' : 'success'}`}>
-                                        {incident.status === 'active' ? 'Active' : 'Resolved'}
-                                    </span>
+                                    <div className="accident-badges">
+                                        <span className={`badge ${getSeverityBadgeClass(accident.severity)}`}>
+                                            {accident.severity}
+                                        </span>
+                                        <span className={`badge badge-${accident.status === 'in-process' ? 'primary' : 'success'}`}>
+                                            {accident.status === 'in-process' ? 'In Process' : 'Resolved'}
+                                        </span>
+                                    </div>
                                     <span className="alert-time">
                                         <Clock size={14} />
-                                        {incident.time}
+                                        {accident.time}
                                     </span>
                                 </div>
-                                <h4 className="incident-type">{incident.type}</h4>
-                                <div className="incident-location">
+                                <div className="accident-location">
                                     <MapPin size={14} />
-                                    {incident.junction}
+                                    {accident.junction}
                                 </div>
-                                <p className="incident-desc">{incident.description}</p>
+                                <p className="accident-desc">{accident.description}</p>
                             </div>
                         ))}
                     </div>
 
-                    {/* Incident Detail View */}
-                    {selectedItem && activeTab === 'incidents' && (
+                    {/* Accident Detail View */}
+                    {selectedItem && activeTab === 'accidents' && (
                         <div className="alert-detail card">
-                            <h3 className="card-title">Incident Details</h3>
+                            <div className="accident-detail-header">
+                                <h3 className="card-title">Accident Details</h3>
+                                <span className={`badge ${getSeverityBadgeClass(selectedItem.severity)}`}>
+                                    {selectedItem.severity}
+                                </span>
+                            </div>
+
+                            {/* Accident Image */}
                             <div className="snapshot-container">
-                                <div className="snapshot-placeholder incident">
+                                <div className={`snapshot-placeholder accident ${selectedItem.severity.toLowerCase()}`}>
                                     <AlertTriangle size={48} />
-                                    <p>Incident image at {selectedItem.junction}</p>
+                                    <p>Accident captured at {selectedItem.junction}</p>
                                 </div>
                             </div>
+
+                            {/* Status Badge */}
+                            <div className="status-section">
+                                <span className="detail-label">Current Status</span>
+                                <span className={`status-badge ${selectedItem.status}`}>
+                                    {selectedItem.status === 'in-process' ? (
+                                        <>
+                                            <Clock size={16} />
+                                            In Process
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircle size={16} />
+                                            Resolved
+                                        </>
+                                    )}
+                                </span>
+                            </div>
+
+                            {/* Location & Time */}
                             <div className="detail-grid">
-                                <div className="detail-item">
-                                    <span className="detail-label">Incident Type</span>
-                                    <span className="detail-value">{selectedItem.type}</span>
-                                </div>
-                                <div className="detail-item">
-                                    <span className="detail-label">Status</span>
-                                    <span className={`badge badge-${selectedItem.status === 'active' ? 'danger' : 'success'}`}>
-                                        {selectedItem.status}
-                                    </span>
-                                </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Location</span>
                                     <span className="detail-value">{selectedItem.junction}</span>
                                 </div>
                                 <div className="detail-item">
-                                    <span className="detail-label">Time</span>
+                                    <span className="detail-label">Time Reported</span>
                                     <span className="detail-value">{selectedItem.time}</span>
                                 </div>
                             </div>
-                            <p className="incident-description">{selectedItem.description}</p>
+
+                            <p className="accident-description">{selectedItem.description}</p>
+
+                            {/* Hospital Info */}
+                            <div className="response-section">
+                                <div className="response-header">
+                                    <Building2 size={18} />
+                                    <h4>Hospital Response</h4>
+                                    {selectedItem.hospital.ambulanceDispatched && (
+                                        <span className="badge badge-success">Ambulance Dispatched</span>
+                                    )}
+                                </div>
+                                <div className="response-details">
+                                    <div className="response-item">
+                                        <span className="response-label">Hospital</span>
+                                        <span className="response-value">{selectedItem.hospital.name}</span>
+                                    </div>
+                                    <div className="response-item">
+                                        <span className="response-label">Location</span>
+                                        <span className="response-value">{selectedItem.hospital.location}</span>
+                                    </div>
+                                    <div className="response-item">
+                                        <span className="response-label">Contact</span>
+                                        <a href={`tel:${selectedItem.hospital.phone}`} className="response-phone">
+                                            <Phone size={14} />
+                                            {selectedItem.hospital.phone}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Police Info */}
+                            <div className="response-section police">
+                                <div className="response-header">
+                                    <Shield size={18} />
+                                    <h4>Traffic Police Response</h4>
+                                    {selectedItem.police.dispatched && (
+                                        <span className="badge badge-success">Officer Dispatched</span>
+                                    )}
+                                </div>
+                                <div className="response-details">
+                                    <div className="response-item">
+                                        <span className="response-label">Station</span>
+                                        <span className="response-value">{selectedItem.police.station}</span>
+                                    </div>
+                                    <div className="response-item">
+                                        <span className="response-label">Location</span>
+                                        <span className="response-value">{selectedItem.police.location}</span>
+                                    </div>
+                                    <div className="response-item">
+                                        <span className="response-label">Officer</span>
+                                        <span className="response-value">{selectedItem.police.officerName}</span>
+                                    </div>
+                                    <div className="response-item">
+                                        <span className="response-label">Contact</span>
+                                        <a href={`tel:${selectedItem.police.phone}`} className="response-phone">
+                                            <Phone size={14} />
+                                            {selectedItem.police.phone}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Update Status Button */}
+                            {selectedItem.status === 'in-process' && (
+                                <button
+                                    className="btn btn-success update-status-btn"
+                                    onClick={() => handleUpdateStatus(selectedItem.id)}
+                                >
+                                    <CheckCircle size={16} />
+                                    Mark as Resolved
+                                </button>
+                            )}
+
+                            {selectedItem.status === 'resolved' && (
+                                <div className="resolved-banner">
+                                    <CheckCircle size={18} />
+                                    <span>This accident has been resolved</span>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

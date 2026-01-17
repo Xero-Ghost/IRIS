@@ -165,6 +165,145 @@
     color: var(--text-secondary);
 }
 
+/* Traffic Volume Chart */
+.traffic-chart {
+    position: relative;
+    height: 240px;
+    padding-left: 40px;
+    padding-bottom: 30px;
+}
+
+.chart-bars {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 100%;
+    border-left: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 10px;
+}
+
+.bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.bars {
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+    height: 180px;
+}
+
+.bar {
+    width: 20px;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s ease;
+    cursor: pointer;
+}
+
+.bar:hover {
+    opacity: 0.8;
+}
+
+.bar.this-week {
+    background: var(--primary);
+}
+
+.bar.last-week {
+    background: var(--text-muted);
+    opacity: 0.5;
+}
+
+.bar-label {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.chart-y-axis {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: calc(100% - 30px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    text-align: right;
+    padding-right: 8px;
+}
+
+/* Wait Time Chart */
+.wait-time-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.wait-time-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.junction-name {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.wait-time-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.wait-bar-container {
+    height: 20px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.wait-bar {
+    height: 100%;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    transition: width 0.3s ease;
+    min-width: 40px;
+}
+
+.wait-bar.before {
+    background: var(--warning);
+}
+
+.wait-bar.after {
+    background: var(--success);
+}
+
+.wait-value {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: white;
+}
+
+.chart-legend .dot.warning {
+    background: var(--warning);
+}
+
+.chart-legend .dot.success {
+    background: var(--success);
+}
+
 @media (max-width: 1024px) {
     .analytics-grid {
         grid-template-columns: 1fr;

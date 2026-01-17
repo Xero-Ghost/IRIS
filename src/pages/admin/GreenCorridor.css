@@ -4,131 +4,154 @@
     gap: 24px;
 }
 
-/* Junction Grid */
-.map-grid-card {
-    padding: 24px;
+/* Map Card */
+.map-card {
+    min-height: 500px;
 }
 
-.junction-grid {
+.map-card .card-header {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 20px;
-}
-
-.grid-row {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-}
-
-.junction-node {
-    width: 72px;
-    height: 72px;
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius);
-    background: var(--bg-tertiary);
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 4px;
-    cursor: pointer;
-    transition: all var(--transition);
+    gap: 8px;
+}
+
+.map-card .card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Corridor Map Container */
+.corridor-map-container {
     position: relative;
+    height: 450px;
+    border-radius: var(--radius);
+    overflow: hidden;
 }
 
-.junction-node:hover:not(:disabled) {
-    border-color: var(--primary);
-    transform: scale(1.05);
+.corridor-map-container .leaflet-container {
+    height: 100%;
+    width: 100%;
+    border-radius: var(--radius);
 }
 
-.junction-node:disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
+/* Custom Junction Marker */
+.custom-junction-marker {
+    background: transparent !important;
+    border: none !important;
 }
 
-.junction-node.selected {
-    background: var(--primary-light);
-    border-color: var(--primary);
+/* Junction Popup */
+.junction-popup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 150px;
 }
 
-.junction-node.corridor-active {
-    background: var(--success-light);
-    border-color: var(--success);
-    animation: pulse-green 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-green {
-
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
-    }
-
-    50% {
-        box-shadow: 0 0 0 8px rgba(22, 163, 74, 0);
-    }
-}
-
-.junction-name {
-    font-size: 0.875rem;
-    font-weight: 600;
+.junction-popup strong {
+    font-size: 0.9375rem;
     color: var(--text-primary);
 }
 
-.junction-order {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 20px;
-    height: 20px;
-    background: var(--primary);
-    color: white;
-    border-radius: 50%;
+.junction-popup .popup-id {
     font-size: 0.75rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: var(--text-muted);
 }
 
-/* Legend */
-.map-legend {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-color);
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.8125rem;
+.junction-popup .popup-phases {
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
-.legend-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 4px;
+.junction-popup .popup-role {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 4px;
 }
 
-.legend-dot.normal {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
+.junction-popup .popup-role.start {
+    color: var(--success);
 }
 
-.legend-dot.selected {
-    background: var(--primary-light);
-    border: 1px solid var(--primary);
+.junction-popup .popup-role.end {
+    color: var(--danger);
 }
 
-.legend-dot.corridor-active {
-    background: var(--success-light);
-    border: 1px solid var(--success);
+.junction-popup .popup-role.middle {
+    color: var(--primary);
+}
+
+.junction-popup .popup-available {
+    font-size: 0.6875rem;
+    color: var(--primary);
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.junction-popup .popup-unavailable {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 4px;
+}
+
+.junction-popup .popup-adjacent {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border-color);
+}
+
+.junction-popup .popup-adjacent small {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+}
+
+/* Corridor Map Legend */
+.corridor-map-legend {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    display: flex;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 8px 14px;
+    border-radius: var(--radius);
+    z-index: 1000;
+}
+
+.corridor-map-legend .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.6875rem;
+    color: white;
+}
+
+.corridor-map-legend .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+/* Map Instructions */
+.map-instructions {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.75);
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    z-index: 1000;
+}
+
+.map-instructions p {
+    font-size: 0.75rem;
+    color: white;
+    margin: 0;
+    text-align: center;
 }
 
 /* Controls Panel */
@@ -164,6 +187,29 @@
     gap: 8px;
 }
 
+.route-badge {
+    padding: 2px 8px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.route-badge.start {
+    background: var(--success);
+    color: white;
+}
+
+.route-badge.end {
+    background: var(--danger);
+    color: white;
+}
+
+.route-badge.middle {
+    background: var(--primary);
+    color: white;
+}
+
 .route-number {
     width: 24px;
     height: 24px;
@@ -186,6 +232,49 @@
 .route-arrow {
     color: var(--text-muted);
     margin: 0 4px;
+}
+
+/* Corridor Type Options */
+.type-options {
+    display: flex;
+    gap: 8px;
+}
+
+.type-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    transition: all var(--transition);
+}
+
+.type-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+}
+
+.type-btn.active.emergency {
+    background: var(--danger-light);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.type-btn.active.vip {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.type-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Duration Options */
@@ -220,6 +309,241 @@
 .duration-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* Notice Banner */
+.notice-banner {
+    background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    animation: pulse-notice 2s ease-in-out infinite;
+}
+
+.notice-banner.waiting {
+    background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+}
+
+@keyframes pulse-notice {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+}
+
+.notice-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: white;
+}
+
+.notice-icon {
+    flex-shrink: 0;
+}
+
+.notice-icon.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.notice-text {
+    flex: 1;
+}
+
+.notice-text h3 {
+    font-size: 1.125rem;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.notice-text p {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin-bottom: 4px;
+}
+
+.notice-junctions {
+    font-size: 0.8125rem;
+    opacity: 0.8;
+}
+
+.notice-timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius);
+}
+
+.countdown {
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+.countdown-label {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* Junction Type Badge */
+.junction-type {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2px 6px;
+    font-size: 0.5rem;
+    font-weight: 700;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.junction-type.start {
+    background: var(--success);
+    color: white;
+}
+
+.junction-type.end {
+    background: var(--danger);
+    color: white;
+}
+
+.junction-type.middle {
+    background: var(--primary);
+    color: white;
+}
+
+/* Notice Pending State */
+.junction-node.notice-pending {
+    background: var(--warning-light);
+    border-color: var(--warning);
+    animation: blink-warning 1s ease-in-out infinite;
+}
+
+@keyframes blink-warning {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Phase Status Card */
+.phase-status-card {
+    background: var(--bg-tertiary);
+}
+
+.phase-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.phase-item {
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+}
+
+.phase-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.phase-type-badge {
+    padding: 2px 8px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    border-radius: 4px;
+}
+
+.phase-type-badge.start {
+    background: var(--success);
+    color: white;
+}
+
+.phase-type-badge.end {
+    background: var(--danger);
+    color: white;
+}
+
+.phase-type-badge.middle {
+    background: var(--primary);
+    color: white;
+}
+
+.phase-junction {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.phase-signals {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.signal-indicator {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+}
+
+.signal-indicator.green {
+    background: var(--success);
+    box-shadow: 0 0 10px rgba(22, 163, 74, 0.5);
+}
+
+.signal-indicator.red {
+    background: var(--danger);
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+.signal-dir {
+    text-transform: uppercase;
+}
+
+.phase-legend {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.phase-legend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.phase-legend .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.phase-legend .dot.green {
+    background: var(--success);
+}
+
+.phase-legend .dot.red {
+    background: var(--danger);
 }
 
 /* Generate Button */
@@ -265,6 +589,100 @@
     color: var(--text-secondary);
 }
 
+/* Corridor Time Info */
+.corridor-time-info {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: var(--radius);
+    padding: 14px;
+}
+
+.time-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.time-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: var(--radius);
+    background: var(--bg-secondary);
+}
+
+.time-block.elapsed {
+    border-left: 3px solid var(--primary);
+}
+
+.time-block.remaining {
+    border-left: 3px solid var(--success);
+}
+
+.time-label {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.time-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: monospace;
+}
+
+/* Progress Bar */
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success) 0%, var(--primary) 100%);
+    border-radius: 4px;
+    transition: width 1s linear;
+}
+
+.progress-percent {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 36px;
+}
+
+/* Time Stamps */
+.time-stamps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.time-stamp {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.time-stamp svg {
+    color: var(--text-muted);
+}
+
 .status-info {
     display: flex;
     gap: 8px;
@@ -275,8 +693,15 @@
     color: var(--text-primary);
 }
 
-.status-info svg {
+.status-info.success svg {
+    color: var(--success);
+}
+
+.status-info.warning svg {
     color: var(--warning);
+}
+
+.status-info svg {
     flex-shrink: 0;
 }
 
@@ -303,6 +728,55 @@
     color: var(--primary);
 }
 
+.confirm-steps {
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.confirm-steps h4 {
+    font-size: 0.875rem;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.confirm-steps ol {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 0;
+    list-style: none;
+    counter-reset: step;
+}
+
+.confirm-steps li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    counter-increment: step;
+}
+
+.confirm-steps li::before {
+    content: counter(step);
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.confirm-steps li svg {
+    display: none;
+}
+
 .confirm-warning {
     display: flex;
     gap: 12px;
@@ -319,6 +793,12 @@
     margin-top: 2px;
 }
 
+/* Legend for notice pending */
+.legend-dot.notice-pending {
+    background: var(--warning-light);
+    border: 1px solid var(--warning);
+}
+
 @media (max-width: 1024px) {
     .corridor-layout {
         grid-template-columns: 1fr;
@@ -327,5 +807,14 @@
     .junction-node {
         width: 56px;
         height: 56px;
+    }
+
+    .notice-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .notice-timer {
+        width: 100%;
     }
 }

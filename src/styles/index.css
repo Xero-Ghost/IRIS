@@ -33,6 +33,7 @@
   
   /* Spacing */
   --sidebar-width: 260px;
+  --sidebar-collapsed-width: 72px;
   --header-height: 64px;
   
   /* Border Radius */
@@ -113,6 +114,11 @@ p {
   margin-left: var(--sidebar-width);
   padding-top: var(--header-height);
   background: var(--bg-primary);
+  transition: margin-left var(--transition);
+}
+
+.app-layout.sidebar-collapsed .main-content {
+  margin-left: var(--sidebar-collapsed-width);
 }
 
 .page-content {

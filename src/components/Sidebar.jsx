@@ -9,7 +9,9 @@ import {
     Bell,
     Settings,
     LogOut,
-    Eye
+    Eye,
+    Lock,
+    Unlock
 } from 'lucide-react'
 import './Sidebar.css'
 
@@ -23,18 +25,28 @@ const adminMenuItems = [
     { path: '/admin/settings', icon: Settings, label: 'Settings' },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ isCollapsed, isLocked, onSidebarClick, onMouseEnter, onMouseLeave }) {
     const { logout } = useAuth()
     const location = useLocation()
 
     return (
-        <aside className="sidebar">
+        <aside
+            className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${isLocked ? 'locked' : ''}`}
+            onClick={onSidebarClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+        >
             <div className="sidebar-header">
                 <div className="sidebar-logo">
                     <Eye size={28} className="logo-icon" />
-                    <span className="logo-text">IRIS</span>
+                    <span className="logo-text">{!isCollapsed && 'IRIS'}</span>
                 </div>
-                <p className="sidebar-tagline">Traffic Management</p>
+                {!isCollapsed && <p className="sidebar-tagline">Traffic Management</p>}
+                {!isCollapsed && (
+                    <div className="lock-indicator" title={isLocked ? 'Click to unlock' : 'Click to lock'}>
+                        {isLocked ? <Lock size={16} /> : <Unlock size={16} />}
+                    </div>
+                )}
             </div>
 
             <nav className="sidebar-nav">
@@ -47,9 +59,11 @@ export default function Sidebar() {
                                     `nav-link ${item.exact ? (location.pathname === item.path ? 'active' : '') : (isActive ? 'active' : '')}`
                                 }
                                 end={item.exact}
+                                title={isCollapsed ? item.label : ''}
+                                onClick={(e) => e.stopPropagation()}
                             >
                                 <item.icon size={20} />
-                                <span>{item.label}</span>
+                                {!isCollapsed && <span>{item.label}</span>}
                             </NavLink>
                         </li>
                     ))}
@@ -57,9 +71,9 @@ export default function Sidebar() {
             </nav>
 
             <div className="sidebar-footer">
-                <button className="logout-btn" onClick={logout}>
+                <button className="logout-btn" onClick={(e) => { e.stopPropagation(); logout(); }} title={isCollapsed ? 'Logout' : ''}>
                     <LogOut size={20} />
-                    <span>Logout</span>
+                    {!isCollapsed && <span>Logout</span>}
                 </button>
             </div>
         </aside>

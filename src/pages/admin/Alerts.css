@@ -101,6 +101,186 @@
     color: var(--text-muted);
 }
 
+/* Accident Card */
+.accident-badges {
+    display: flex;
+    gap: 8px;
+}
+
+.accident-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.accident-desc {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+/* Accident Detail */
+.accident-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.snapshot-placeholder.accident {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.snapshot-placeholder.accident.severe {
+    background: linear-gradient(135deg, var(--danger-light) 0%, #fecaca 100%);
+}
+
+.snapshot-placeholder.accident.moderate {
+    background: linear-gradient(135deg, var(--warning-light) 0%, #fde68a 100%);
+    color: var(--warning);
+}
+
+.snapshot-placeholder.accident.minor {
+    background: linear-gradient(135deg, var(--success-light) 0%, #bbf7d0 100%);
+    color: var(--success);
+}
+
+/* Status Section */
+.status-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    width: fit-content;
+}
+
+.status-badge.in-process {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.status-badge.resolved {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+/* Response Sections (Hospital & Police) */
+.response-section {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.response-section.police {
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, #e0e7ff 100%);
+}
+
+.response-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.response-header svg {
+    color: var(--primary);
+}
+
+.response-header h4 {
+    flex: 1;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.response-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.response-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.response-label {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.response-value {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.response-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--primary);
+    transition: color var(--transition);
+}
+
+.response-phone:hover {
+    color: var(--primary-hover);
+}
+
+/* Update Status Button */
+.update-status-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--success);
+    color: white;
+    border-radius: var(--radius);
+    font-weight: 600;
+    transition: all var(--transition);
+}
+
+.update-status-btn:hover {
+    background: #15803d;
+}
+
+.resolved-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: var(--success-light);
+    color: var(--success);
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
 /* Alert Detail */
 .alert-detail {
     height: fit-content;

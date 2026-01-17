@@ -3,8 +3,7 @@ import {
     TrendingUp,
     Clock,
     Leaf,
-    Car,
-    BarChart3
+    Car
 } from 'lucide-react'
 import './Analytics.css'
 
@@ -91,21 +90,82 @@ export default function Analytics() {
                             <span><i className="dot muted"></i> Last Week</span>
                         </div>
                     </div>
-                    <div className="chart-placeholder">
-                        <BarChart3 size={48} />
-                        <p>Traffic volume chart</p>
-                        <span>Shows hourly traffic patterns</span>
+                    <div className="traffic-chart">
+                        <div className="chart-bars">
+                            {[
+                                { day: 'Mon', thisWeek: 85, lastWeek: 70 },
+                                { day: 'Tue', thisWeek: 72, lastWeek: 65 },
+                                { day: 'Wed', thisWeek: 90, lastWeek: 75 },
+                                { day: 'Thu', thisWeek: 78, lastWeek: 80 },
+                                { day: 'Fri', thisWeek: 95, lastWeek: 85 },
+                                { day: 'Sat', thisWeek: 60, lastWeek: 55 },
+                                { day: 'Sun', thisWeek: 45, lastWeek: 40 },
+                            ].map((item) => (
+                                <div key={item.day} className="bar-group">
+                                    <div className="bars">
+                                        <div
+                                            className="bar last-week"
+                                            style={{ height: `${item.lastWeek}%` }}
+                                            title={`Last Week: ${item.lastWeek}%`}
+                                        ></div>
+                                        <div
+                                            className="bar this-week"
+                                            style={{ height: `${item.thisWeek}%` }}
+                                            title={`This Week: ${item.thisWeek}%`}
+                                        ></div>
+                                    </div>
+                                    <span className="bar-label">{item.day}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="chart-y-axis">
+                            <span>100%</span>
+                            <span>75%</span>
+                            <span>50%</span>
+                            <span>25%</span>
+                            <span>0%</span>
+                        </div>
                     </div>
                 </div>
 
                 <div className="card chart-card">
                     <div className="card-header">
                         <h3 className="card-title">Wait Time by Junction</h3>
+                        <div className="chart-legend">
+                            <span><i className="dot warning"></i> Before IRIS</span>
+                            <span><i className="dot success"></i> After IRIS</span>
+                        </div>
                     </div>
-                    <div className="chart-placeholder">
-                        <Clock size={48} />
-                        <p>Wait time comparison</p>
-                        <span>Before vs after IRIS deployment</span>
+                    <div className="wait-time-chart">
+                        {[
+                            { junction: 'Tech Park Gate', before: 85, after: 42 },
+                            { junction: 'City Center', before: 72, after: 38 },
+                            { junction: 'Hospital Road', before: 95, after: 55 },
+                            { junction: 'Stadium Junction', before: 68, after: 45 },
+                            { junction: 'Railway Station', before: 78, after: 50 },
+                        ].map((item) => (
+                            <div key={item.junction} className="wait-time-row">
+                                <span className="junction-name">{item.junction}</span>
+                                <div className="wait-time-bars">
+                                    <div className="wait-bar-container">
+                                        <div
+                                            className="wait-bar before"
+                                            style={{ width: `${item.before}%` }}
+                                        >
+                                            <span className="wait-value">{item.before}s</span>
+                                        </div>
+                                    </div>
+                                    <div className="wait-bar-container">
+                                        <div
+                                            className="wait-bar after"
+                                            style={{ width: `${item.after}%` }}
+                                        >
+                                            <span className="wait-value">{item.after}s</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
