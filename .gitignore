@@ -11,6 +11,10 @@ out/
 
 # Environment files
 backend/.env
+backend/.env.example
+frontend/.env
+frontend/.env.local
+frontend/.env.example
 .env.local
 .env.development.local
 .env.test.local
@@ -29,9 +33,24 @@ backend/__pycache__/
 *.pyc
 *.pyo
 __pycache__/
+venv/
+.venv/
 
 # Database
 backend/sql_app.db
+backend/iris_dev.db
+*.db
+
+# YOLO/ML Models (too large for git)
+backend/*.pt
+*.pt
+
+# Video files (too large for git)
+backend/*.mp4
+*.mp4
+
+# Accident evidence images (generated at runtime)
+backend/accident_evidence/
 
 # Editor/IDE
 .idea/

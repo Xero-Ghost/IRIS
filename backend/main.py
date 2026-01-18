@@ -33,10 +33,17 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-# CORS Middleware
+# CORS Middleware - Configure allowed origins
+# In production, set ALLOWED_ORIGINS environment variable with comma-separated domains
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*")
+if allowed_origins == "*":
+    origins = ["*"]
+else:
+    origins = [origin.strip() for origin in allowed_origins.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

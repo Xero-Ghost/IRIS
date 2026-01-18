@@ -4,6 +4,9 @@ import './PublicAlerts.css'
 import { accidentsAPI } from '../../services/api'
 import { useCorridor } from '../../context/CorridorContext'
 
+// API base URL for image paths
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+
 export default function PublicAlerts() {
     const [accidents, setAccidents] = useState([])
     const [loading, setLoading] = useState(true)
@@ -92,8 +95,8 @@ export default function PublicAlerts() {
                             <div className="corridor-status-badge">
                                 <Zap size={18} />
                                 {corridorStatus === 'active' ? 'ACTIVE CORRIDOR' :
-                                 corridorStatus === 'notice' ? 'CORRIDOR NOTICE' :
-                                 'PREPARING CORRIDOR'}
+                                    corridorStatus === 'notice' ? 'CORRIDOR NOTICE' :
+                                        'PREPARING CORRIDOR'}
                             </div>
                             <span className="corridor-type">{activeCorridor.type || 'Emergency'}</span>
                         </div>
@@ -209,7 +212,7 @@ export default function PublicAlerts() {
                                 {accident.image_path && (
                                     <div className="accident-image">
                                         <img
-                                            src={accident.image_url || `http://localhost:8000/evidence/${accident.image_path.split('/').pop()}`}
+                                            src={accident.image_url || `${API_BASE_URL}/evidence/${accident.image_path.split('/').pop()}`}
                                             alt="Accident evidence"
                                             onError={(e) => e.target.style.display = 'none'}
                                         />
