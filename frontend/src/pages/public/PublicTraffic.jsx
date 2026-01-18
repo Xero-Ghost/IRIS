@@ -30,14 +30,6 @@ export default function PublicTraffic() {
                 scheduleAPI.get().catch(() => [])
             ])
 
-            if (traffic && traffic.length > 0) {
-                setTrafficData(traffic)
-            }
-
-            if (schedule && schedule.length > 0) {
-                setScheduleData(schedule)
-            }
-
             if (junctions && junctions.length > 0) {
                 // Calculate traffic density based on vehicle counts
                 const mappedJunctions = junctions.map((j, index) => {
@@ -47,8 +39,8 @@ export default function PublicTraffic() {
 
                     if (phaseData && phaseData.counts) {
                         totalVehicles = phaseData.counts.two_wheelers +
-                                       phaseData.counts.light_motor_vehicles +
-                                       phaseData.counts.heavy_motor_vehicles
+                            phaseData.counts.light_motor_vehicles +
+                            phaseData.counts.heavy_motor_vehicles
 
                         // Determine density based on vehicle count
                         if (totalVehicles <= 15) {
