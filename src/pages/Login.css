@@ -135,3 +135,23 @@
 .login-back:hover {
     color: var(--primary);
 }
+
+.back-to-home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+    padding: 12px 24px;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition);
+}
+
+.back-to-home:hover {
+    color: var(--primary);
+    background: rgba(255, 255, 255, 1);
+}

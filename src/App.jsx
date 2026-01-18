@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { CorridorProvider } from './context/CorridorContext'
 import ProtectedRoute from './components/ProtectedRoute'
+import Landing from './pages/Landing'
 import Login from './pages/Login'
 import AdminLayout from './layouts/AdminLayout'
 import PublicLayout from './layouts/PublicLayout'
@@ -21,6 +22,7 @@ function App() {
             <CorridorProvider>
                 <BrowserRouter>
                     <Routes>
+                        <Route path="/" element={<Landing />} />
                         <Route path="/login" element={<Login />} />
 
                         {/* Admin Routes */}
@@ -44,7 +46,7 @@ function App() {
                             <Route path="alerts" element={<PublicAlerts />} />
                         </Route>
 
-                        <Route path="/" element={<Navigate to="/login" replace />} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </BrowserRouter>
             </CorridorProvider>

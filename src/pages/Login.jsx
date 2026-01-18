@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Eye, User, Users, ArrowRight, Loader } from 'lucide-react'
+import { Eye, User, Users, ArrowRight, ArrowLeft } from 'lucide-react'
 import './Login.css'
 
 export default function Login() {
@@ -134,6 +134,11 @@ export default function Login() {
                     </form>
                 )}
             </div>
+
+            <Link to="/" className="back-to-home">
+                <ArrowLeft size={18} />
+                Back to Home
+            </Link>
         </div>
     )
 }

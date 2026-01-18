@@ -19,6 +19,12 @@
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--primary);
+    text-decoration: none;
+    transition: opacity var(--transition);
+}
+
+.public-logo:hover {
+    opacity: 0.8;
 }
 
 .public-nav {
@@ -48,14 +54,36 @@
     color: var(--primary);
 }
 
-.public-admin-link {
+.public-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.back-home-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 0.875rem;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     transition: color var(--transition);
 }
 
-.public-admin-link:hover {
+.back-home-link:hover {
     color: var(--primary);
+}
+
+.public-admin-link {
+    font-size: 0.875rem;
+    color: var(--white);
+    background: var(--primary);
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    transition: all var(--transition);
+}
+
+.public-admin-link:hover {
+    background: var(--primary-dark);
 }
 
 .public-main {

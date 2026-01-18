@@ -1,26 +1,32 @@
-import { Outlet, NavLink } from 'react-router-dom'
-import { Eye, MapPin, AlertTriangle } from 'lucide-react'
+import { Outlet, NavLink, Link } from 'react-router-dom'
+import { Eye, MapPin, AlertTriangle, Home } from 'lucide-react'
 import './PublicLayout.css'
 
 export default function PublicLayout() {
     return (
         <div className="public-layout">
             <header className="public-header">
-                <div className="public-logo">
+                <Link to="/" className="public-logo">
                     <Eye size={24} />
                     <span>IRIS</span>
-                </div>
+                </Link>
                 <nav className="public-nav">
                     <NavLink to="/public" end className={({ isActive }) => isActive ? 'active' : ''}>
                         <MapPin size={18} />
-                        Traffic Status
+                        Dashboard
                     </NavLink>
                     <NavLink to="/public/alerts" className={({ isActive }) => isActive ? 'active' : ''}>
                         <AlertTriangle size={18} />
-                        Incidents
+                        Alerts
                     </NavLink>
                 </nav>
-                <a href="/login" className="public-admin-link">Admin Login</a>
+                <div className="public-header-actions">
+                    <Link to="/" className="back-home-link">
+                        <Home size={16} />
+                        Home
+                    </Link>
+                    <Link to="/login" className="public-admin-link">Admin Login</Link>
+                </div>
             </header>
             <main className="public-main">
                 <Outlet />

@@ -1,5 +1,24 @@
 .public-traffic {}
 
+.public-traffic.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    gap: 16px;
+    color: var(--text-secondary);
+}
+
+.public-traffic.loading-state .spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 .public-page-header {
     text-align: center;
     margin-bottom: 32px;
@@ -15,15 +34,15 @@
     color: var(--text-secondary);
 }
 
-/* Public Stats */
-.public-stats {
+/* Summary Grid */
+.traffic-summary-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 24px;
 }
 
-.public-stat-card {
+.summary-card {
     display: flex;
     align-items: center;
     gap: 16px;
@@ -31,40 +50,55 @@
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.public-stat-card .stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius);
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.summary-card .summary-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.public-stat-card .stat-icon.warning {
+.summary-card.danger .summary-icon {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.summary-card.warning .summary-icon {
     background: var(--warning-light);
     color: var(--warning);
 }
 
-.public-stat-card .stat-icon.primary {
-    background: var(--primary-light);
-    color: var(--primary);
-}
-
-.public-stat-card .stat-icon.success {
+.summary-card.success .summary-icon {
     background: var(--success-light);
     color: var(--success);
 }
 
-.public-stat-card .stat-value {
-    display: block;
-    font-size: 1.5rem;
+.summary-card.primary .summary-icon {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.summary-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-value {
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--text-primary);
 }
 
-.public-stat-card .stat-label {
+.summary-label {
     font-size: 0.8125rem;
     color: var(--text-secondary);
 }
@@ -73,18 +107,19 @@
 .traffic-legend {
     display: flex;
     justify-content: center;
-    gap: 24px;
+    gap: 32px;
     margin-bottom: 24px;
-    padding: 12px;
+    padding: 16px;
     background: var(--bg-secondary);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
 }
 
 .traffic-legend span {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     color: var(--text-secondary);
 }
 
@@ -106,108 +141,184 @@
     background: var(--danger);
 }
 
-/* Junction Grid */
-.junction-grid {
+/* Junction Cards Grid */
+.junction-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
     margin-bottom: 24px;
 }
 
-.junction-status-card {
-    padding: 20px;
+.junction-detail-card {
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
+    padding: 20px;
     border-left: 4px solid var(--border-color);
+    transition: all 0.2s;
 }
 
-.junction-status-card.low {
+.junction-detail-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.junction-detail-card.low {
     border-left-color: var(--success);
 }
 
-.junction-status-card.medium {
+.junction-detail-card.medium {
     border-left-color: var(--warning);
 }
 
-.junction-status-card.high {
+.junction-detail-card.high {
     border-left-color: var(--danger);
-    background: #fef2f2;
 }
 
-.junction-status-header {
+.junction-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+    align-items: flex-start;
+    margin-bottom: 16px;
 }
 
-.traffic-badge {
-    padding: 4px 10px;
-    font-size: 0.6875rem;
+.junction-info h3 {
+    font-size: 1.125rem;
     font-weight: 600;
-    border-radius: 9999px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: var(--text-primary);
+    margin-bottom: 4px;
 }
 
-.traffic-badge.success {
+.junction-id-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    padding: 4px 8px;
+    border-radius: var(--radius);
+}
+
+.density-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.density-badge.low {
     background: var(--success-light);
     color: var(--success);
 }
 
-.traffic-badge.warning {
+.density-badge.medium {
     background: var(--warning-light);
     color: var(--warning);
 }
 
-.traffic-badge.danger {
+.density-badge.high {
     background: var(--danger-light);
     color: var(--danger);
 }
 
-.wait-time {
+.junction-stats-row {
     display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.junction-stat {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 4px;
-    font-size: 0.8125rem;
+    flex: 1;
+}
+
+.junction-stat svg {
     color: var(--text-muted);
 }
 
-.junction-status-card .junction-name {
-    font-size: 1rem;
-    margin-bottom: 4px;
+.junction-stat span {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
-.junction-status-card .junction-id {
+.junction-stat small {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.vehicle-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vehicle-type {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
     font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.vehicle-type svg {
     color: var(--text-muted);
 }
 
-/* Note */
+.vehicle-type strong {
+    color: var(--text-primary);
+}
+
+/* Public Note */
 .public-note {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     padding: 12px;
-    background: var(--bg-tertiary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius);
     font-size: 0.8125rem;
     color: var(--text-secondary);
 }
 
-@media (max-width: 768px) {
-    .public-stats {
+.no-data {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px;
+    grid-column: 1 / -1;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .traffic-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .traffic-summary-grid {
         grid-template-columns: 1fr;
     }
 
     .traffic-legend {
         flex-direction: column;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
+    }
+
+    .junction-cards-grid {
+        grid-template-columns: 1fr;
     }
 }
