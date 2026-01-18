@@ -3,6 +3,9 @@ import { Camera, AlertTriangle, Wrench, Clock, MapPin, Eye, Phone, Building2, Sh
 import './Alerts.css'
 import { accidentsAPI, alertsAPI } from '../../services/api'
 
+// API base URL for image paths
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+
 // Sample violation data (to be replaced with API when available)
 const violationsData = [
     {
@@ -333,7 +336,7 @@ export default function Alerts() {
                                     <div className="snapshot-container">
                                         {selectedItem.snapshot && selectedItem.snapshot !== '/placeholder-accident.jpg' ? (
                                             <img
-                                                src={`http://localhost:8000${selectedItem.snapshot}`}
+                                                src={`${API_BASE_URL}${selectedItem.snapshot}`}
                                                 alt="Accident evidence"
                                                 className="accident-snapshot"
                                                 onError={(e) => {

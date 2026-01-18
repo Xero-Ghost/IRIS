@@ -3,14 +3,15 @@
  * Centralized API configuration and utilities for connecting to FastAPI backend
  */
 
-const API_BASE_URL = 'http://localhost:8000';
+// Use environment variable for production, fallback to localhost for development
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 /**
  * Generic fetch wrapper with error handling
  */
 async function request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     const config = {
         headers: {
             'Content-Type': 'application/json',
@@ -21,12 +22,12 @@ async function request(endpoint, options = {}) {
 
     try {
         const response = await fetch(url, config);
-        
+
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
         }
-        
+
         // Handle empty responses (like DELETE)
         const text = await response.text();
         return text ? JSON.parse(text) : null;
@@ -47,7 +48,7 @@ export const api = {
 
 // ============ Authentication API ============
 export const authAPI = {
-    login: (username, password, role) => 
+    login: (username, password, role) =>
         api.post('/token', { username, password, role }),
 };
 
@@ -109,7 +110,7 @@ export const signalTimingsAPI = {
 
 // ============ Traffic Data API ============
 export const trafficDataAPI = {
-    getHistory: (junctionId, limit = 100) => 
+    getHistory: (junctionId, limit = 100) =>
         api.get(`/traffic-data-history/${junctionId}?limit=${limit}`),
     record: (data) => api.post('/traffic-data-record', data),
     getLive: () => api.get('/traffic-data'),

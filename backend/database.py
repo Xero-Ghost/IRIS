@@ -6,23 +6,58 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# PostgreSQL configuration
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_NAME = os.getenv("DB_NAME", "iris_db")
+# Database configuration - supports multiple formats for flexibility
+# Priority: DATABASE_URL (Render) > Individual DB_* vars > SQLite fallback
 
-SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+def get_database_url():
+    """
+    Get database URL with support for:
+    1. DATABASE_URL environment variable (Render, Heroku)
+    2. Individual DB_* environment variables (local PostgreSQL)
+    3. SQLite fallback for development
+    """
+    # Check for DATABASE_URL first (used by Render, Heroku, etc.)
+    database_url = os.getenv("DATABASE_URL")
+    
+    if database_url:
+        # Render uses postgres:// but SQLAlchemy requires postgresql://
+        if database_url.startswith("postgres://"):
+            database_url = database_url.replace("postgres://", "postgresql://", 1)
+        return database_url
+    
+    # Check for individual PostgreSQL configuration
+    db_user = os.getenv("DB_USER")
+    db_password = os.getenv("DB_PASSWORD")
+    db_host = os.getenv("DB_HOST", "localhost")
+    db_name = os.getenv("DB_NAME", "iris_db")
+    
+    if db_user and db_password:
+        return f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}"
+    
+    # Fallback to SQLite for development without PostgreSQL
+    print("Warning: No PostgreSQL configuration found, using SQLite fallback")
+    return "sqlite:///./iris_dev.db"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SQLALCHEMY_DATABASE_URL = get_database_url()
+
+# Create engine with appropriate settings
+if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL, 
+        connect_args={"check_same_thread": False}  # Required for SQLite
+    )
+else:
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 # Verify connection on startup
 try:
     with engine.connect() as connection:
         pass
-    print(f"Connected to PostgreSQL database: {DB_NAME}")
+    db_type = "SQLite" if SQLALCHEMY_DATABASE_URL.startswith("sqlite") else "PostgreSQL"
+    print(f"Connected to {db_type} database successfully")
 except Exception as e:
-    raise RuntimeError(f"Failed to connect to PostgreSQL database: {e}")
+    print(f"Warning: Database connection failed: {e}")
+    print("The application will attempt to reconnect when needed.")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -34,8 +69,7 @@ def get_db():
         raise Exception("Database not configured")
     db = SessionLocal()
     try:
-        print("get_db: Session created")
         yield db
     finally:
-        print("get_db: Session closed")
         db.close()
+
