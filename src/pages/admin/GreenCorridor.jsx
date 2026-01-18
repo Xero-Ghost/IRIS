@@ -5,8 +5,8 @@ import 'leaflet/dist/leaflet.css'
 import { useCorridor, signalJunctions } from '../../context/CorridorContext'
 import './GreenCorridor.css'
 
-// Map center (Bangalore)
-const mapCenter = [12.9700, 77.5950]
+// Map center (Delhi, India)
+const mapCenter = [28.6139, 77.2090]
 
 export default function GreenCorridor() {
     const {
@@ -23,6 +23,7 @@ export default function GreenCorridor() {
     const [corridorType, setCorridorType] = useState('emergency')
     const [showConfirmModal, setShowConfirmModal] = useState(false)
     const [elapsedSeconds, setElapsedSeconds] = useState(0)
+    const [routePath, setRoutePath] = useState([]) // Actual road path from OSRM
 
     // Restore selected junctions from active corridor on mount
     useEffect(() => {
@@ -46,6 +47,44 @@ export default function GreenCorridor() {
             if (timer) clearInterval(timer)
         }
     }, [corridorStatus, activeCorridor])
+
+    // Fetch actual road route from OSRM when junctions change
+    useEffect(() => {
+        const fetchRoute = async () => {
+            const junctions = corridorStatus === 'active' && activeCorridor
+                ? activeCorridor.junctions
+                : selectedJunctions
+
+            if (junctions.length < 2) {
+                setRoutePath([])
+                return
+            }
+
+            try {
+                // Build OSRM coordinates string (lng,lat format)
+                const coords = junctions.map(j => `${j.lng},${j.lat}`).join(';')
+                const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`
+
+                const response = await fetch(url)
+                const data = await response.json()
+
+                if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+                    // OSRM returns [lng, lat], we need [lat, lng] for Leaflet
+                    const path = data.routes[0].geometry.coordinates.map(coord => [coord[1], coord[0]])
+                    setRoutePath(path)
+                } else {
+                    // Fallback to straight lines if OSRM fails
+                    setRoutePath(junctions.map(j => [j.lat, j.lng]))
+                }
+            } catch (error) {
+                console.error('Failed to fetch route from OSRM:', error)
+                // Fallback to straight lines
+                setRoutePath(junctions.map(j => [j.lat, j.lng]))
+            }
+        }
+
+        fetchRoute()
+    }, [selectedJunctions, activeCorridor, corridorStatus])
 
     // Check if two junctions are adjacent
     const areAdjacent = (junction1, junction2) => {
@@ -243,10 +282,10 @@ export default function GreenCorridor() {
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
 
-                            {/* Corridor Path Line */}
-                            {corridorPath.length >= 2 && (
+                            {/* Corridor Path Line - follows actual roads */}
+                            {routePath.length >= 2 && (
                                 <Polyline
-                                    positions={corridorPath}
+                                    positions={routePath}
                                     color={corridorStatus === 'active' ? '#16a34a' : corridorStatus === 'notice' ? '#f59e0b' : '#2563eb'}
                                     weight={5}
                                     opacity={0.8}
@@ -307,19 +346,19 @@ export default function GreenCorridor() {
                         {/* Map Legend */}
                         <div className="corridor-map-legend">
                             <div className="legend-item">
-                                <span className="legend-dot" style={{background: '#64748b'}}></span>
+                                <span className="legend-dot" style={{ background: '#64748b' }}></span>
                                 <span>Junction</span>
                             </div>
                             <div className="legend-item">
-                                <span className="legend-dot" style={{background: '#3b82f6'}}></span>
+                                <span className="legend-dot" style={{ background: '#3b82f6' }}></span>
                                 <span>Available</span>
                             </div>
                             <div className="legend-item">
-                                <span className="legend-dot" style={{background: '#2563eb'}}></span>
+                                <span className="legend-dot" style={{ background: '#2563eb' }}></span>
                                 <span>Selected</span>
                             </div>
                             <div className="legend-item">
-                                <span className="legend-dot" style={{background: '#16a34a'}}></span>
+                                <span className="legend-dot" style={{ background: '#16a34a' }}></span>
                                 <span>Active</span>
                             </div>
                         </div>

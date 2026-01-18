@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import {
     Radio,
     Timer,
@@ -11,13 +12,15 @@ import {
     Clock,
     Car,
     Shield,
-    AlertCircle
+    AlertCircle,
+    Loader
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './Dashboard.css'
+import { systemStatsAPI, alertsAPI, accidentsAPI, junctionsAPI } from '../../services/api'
 
 // Custom accident icon
 const accidentIcon = L.divIcon({
@@ -27,70 +30,6 @@ const accidentIcon = L.divIcon({
     iconAnchor: [20, 20],
     popupAnchor: [0, -20]
 })
-
-// Sample data for demonstration
-const stats = [
-    {
-        label: 'Active Signals',
-        value: '247',
-        icon: Radio,
-        type: 'primary',
-        change: '+3 today',
-        trend: 'positive'
-    },
-    {
-        label: 'Avg Wait Time',
-        value: '32s',
-        icon: Timer,
-        type: 'success',
-        change: '-5s from yesterday',
-        trend: 'positive'
-    },
-    {
-        label: 'CO₂ Saved',
-        value: '2.4 tons',
-        icon: Leaf,
-        type: 'success',
-        change: '+0.3 today',
-        trend: 'positive'
-    },
-    {
-        label: 'Active Accidents',
-        value: '2',
-        icon: AlertTriangle,
-        type: 'danger',
-        change: '1 resolved today',
-        trend: 'neutral'
-    },
-]
-
-const recentAlerts = [
-    { id: 1, type: 'violation', message: 'Signal violation at Junction 15', time: '5 min ago', severity: 'warning' },
-    { id: 2, type: 'incident', message: 'Accident reported near MG Road', time: '12 min ago', severity: 'danger' },
-    { id: 3, type: 'maintenance', message: 'Camera offline at Junction 8', time: '25 min ago', severity: 'warning' },
-]
-
-const topJunctions = [
-    { id: 'J-015', name: 'City Center', vehicleCount: 1250, status: 'green' },
-    { id: 'J-023', name: 'MG Road Crossing', vehicleCount: 980, status: 'yellow' },
-    { id: 'J-007', name: 'Railway Station', vehicleCount: 875, status: 'green' },
-    { id: 'J-031', name: 'Industrial Area', vehicleCount: 720, status: 'red' },
-]
-
-// Junction markers for OpenStreetMap (Bangalore coordinates)
-const mapJunctions = [
-    { id: 'J-001', name: 'City Center', lat: 12.9716, lng: 77.5946, status: 'green', vehicles: 1250 },
-    { id: 'J-002', name: 'MG Road Crossing', lat: 12.9756, lng: 77.6066, status: 'red', vehicles: 980, hasAccident: true },
-    { id: 'J-003', name: 'Railway Station', lat: 12.9779, lng: 77.5728, status: 'green', vehicles: 875 },
-    { id: 'J-004', name: 'Industrial Area', lat: 12.9850, lng: 77.6150, status: 'yellow', vehicles: 720 },
-    { id: 'J-005', name: 'Hospital Road', lat: 12.9600, lng: 77.5800, status: 'green', vehicles: 650 },
-    { id: 'J-006', name: 'Tech Park Gate', lat: 12.9680, lng: 77.6200, status: 'green', vehicles: 580 },
-    { id: 'J-007', name: 'Stadium Junction', lat: 12.9800, lng: 77.5950, status: 'yellow', vehicles: 520 },
-    { id: 'J-008', name: 'Market Square', lat: 12.9650, lng: 77.5850, status: 'green', vehicles: 490 },
-]
-
-// Map center (Bangalore)
-const mapCenter = [12.9716, 77.5946]
 
 // Get color based on status
 const getStatusColor = (status) => {
@@ -102,41 +41,167 @@ const getStatusColor = (status) => {
     }
 }
 
-// Active accidents data
-const activeAccidents = [
-    {
-        id: 'A-001',
-        junction: 'MG Road Crossing',
-        junctionId: 'J-002',
-        severity: 4,
-        severityLabel: 'Severe',
-        time: '14:20',
-        description: 'Multi-vehicle collision, injuries reported',
-        ambulanceETA: '3 min',
-        policeETA: '5 min',
-        ambulanceDispatched: true,
-        policeDispatched: true,
-        hospitalName: 'City General Hospital',
-        hospitalPhone: '+91 80 2345 6789'
-    },
-    {
-        id: 'A-002',
-        junction: 'Railway Station Junction',
-        junctionId: 'J-003',
-        severity: 2,
-        severityLabel: 'Moderate',
-        time: '13:45',
-        description: 'Two-wheeler collision, minor injuries',
-        ambulanceETA: '2 min',
-        policeETA: '4 min',
-        ambulanceDispatched: true,
-        policeDispatched: true,
-        hospitalName: 'Apollo Clinic',
-        hospitalPhone: '+91 80 3456 7890'
-    }
-]
+// Determine traffic status based on total phases or camera count
+const getTrafficStatus = (junction) => {
+    // Simple logic based on total_phases or random for demo
+    const phases = junction.total_phases || 4
+    if (phases <= 3) return 'green'
+    if (phases === 4) return 'yellow'
+    return 'red'
+}
+
+// Map center (Delhi, India)
+const mapCenter = [28.6139, 77.2090]
 
 export default function Dashboard() {
+    const [stats, setStats] = useState([
+        { label: 'Active Signals', value: '...', icon: Radio, type: 'primary', change: 'Loading...', trend: 'neutral' },
+        { label: 'Avg Wait Time', value: '...', icon: Timer, type: 'success', change: 'Loading...', trend: 'neutral' },
+        { label: 'CO₂ Saved', value: '...', icon: Leaf, type: 'success', change: 'Loading...', trend: 'neutral' },
+        { label: 'Active Accidents', value: '...', icon: AlertTriangle, type: 'danger', change: 'Loading...', trend: 'neutral' },
+    ])
+    const [recentAlerts, setRecentAlerts] = useState([])
+    const [activeAccidents, setActiveAccidents] = useState([])
+    const [mapJunctions, setMapJunctions] = useState([])
+    const [topJunctions, setTopJunctions] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+
+    useEffect(() => {
+        fetchDashboardData()
+    }, [])
+
+    const fetchDashboardData = async () => {
+        setLoading(true)
+        setError(null)
+        try {
+            // Fetch all data in parallel
+            const [systemStats, alerts, accidents, junctions] = await Promise.all([
+                systemStatsAPI.get().catch(() => null),
+                alertsAPI.getAll(null, 5).catch(() => []),
+                accidentsAPI.getAll({ status: 'active', limit: 10 }).catch(() => []),
+                junctionsAPI.getAll().catch(() => [])
+            ])
+
+            // Update stats
+            if (systemStats) {
+                setStats([
+                    {
+                        label: 'Active Signals',
+                        value: String(systemStats.active_signals || 0),
+                        icon: Radio,
+                        type: 'primary',
+                        change: '+3 today',
+                        trend: 'positive'
+                    },
+                    {
+                        label: 'Avg Wait Time',
+                        value: `${systemStats.avg_wait_time || 0}s`,
+                        icon: Timer,
+                        type: 'success',
+                        change: '-5s from yesterday',
+                        trend: 'positive'
+                    },
+                    {
+                        label: 'CO₂ Saved',
+                        value: `${systemStats.co2_saved_today || 0} tons`,
+                        icon: Leaf,
+                        type: 'success',
+                        change: '+0.3 today',
+                        trend: 'positive'
+                    },
+                    {
+                        label: 'Active Accidents',
+                        value: String(accidents.length || systemStats.incidents_today || 0),
+                        icon: AlertTriangle,
+                        type: 'danger',
+                        change: `${accidents.length} active`,
+                        trend: 'neutral'
+                    },
+                ])
+            }
+
+            // Update recent alerts
+            if (alerts && alerts.length > 0) {
+                setRecentAlerts(alerts.slice(0, 3).map(alert => ({
+                    id: alert.id,
+                    type: alert.type,
+                    message: alert.message,
+                    time: new Date(alert.created_at).toLocaleString(),
+                    severity: alert.type === 'incident' ? 'danger' : 'warning'
+                })))
+            }
+
+            // Update active accidents
+            if (accidents && accidents.length > 0) {
+                setActiveAccidents(accidents.map(acc => ({
+                    id: `A-${acc.id}`,
+                    junction: acc.location || `Junction ${acc.junction_id}`,
+                    junctionId: acc.junction_id,
+                    severity: getSeverityLevel(acc.severity),
+                    severityLabel: acc.severity || 'Unknown',
+                    time: new Date(acc.detected_at).toLocaleTimeString(),
+                    description: acc.description || 'Accident detected',
+                    ambulanceETA: '5 min',
+                    policeETA: '7 min',
+                    ambulanceDispatched: true,
+                    policeDispatched: true,
+                    hospitalName: 'City General Hospital',
+                    hospitalPhone: '+91 80 2345 6789'
+                })))
+            }
+
+            // Update junctions for map
+            if (junctions && junctions.length > 0) {
+                const mappedJunctions = junctions.map(j => ({
+                    id: j.id,
+                    name: j.name,
+                    lat: parseFloat(j.latitude) || 12.9716 + (Math.random() - 0.5) * 0.02,
+                    lng: parseFloat(j.longitude) || 77.5946 + (Math.random() - 0.5) * 0.02,
+                    status: getTrafficStatus(j),
+                    vehicles: Math.floor(Math.random() * 500) + 500,
+                    hasAccident: accidents.some(a => a.junction_id === j.id)
+                }))
+                setMapJunctions(mappedJunctions)
+
+                // Top junctions (first 4)
+                setTopJunctions(junctions.slice(0, 4).map(j => ({
+                    id: j.id,
+                    name: j.name,
+                    vehicleCount: Math.floor(Math.random() * 500) + 500,
+                    status: getTrafficStatus(j)
+                })))
+            }
+
+        } catch (err) {
+            console.error('Dashboard data fetch error:', err)
+            setError('Failed to load dashboard data')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const getSeverityLevel = (severity) => {
+        switch (severity?.toLowerCase()) {
+            case 'critical': return 5
+            case 'high': return 4
+            case 'medium': return 3
+            case 'low': return 2
+            default: return 1
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="dashboard loading-state">
+                <div className="loading-spinner">
+                    <Loader className="spin" size={32} />
+                    <p>Loading dashboard...</p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="dashboard">
             <header className="page-header">
@@ -144,6 +209,7 @@ export default function Dashboard() {
                     <h1 className="page-title">Dashboard</h1>
                     <p className="page-subtitle">Traffic management overview</p>
                 </div>
+                {error && <div className="error-banner">{error}</div>}
             </header>
 
             {/* Active Accidents Alert Banner */}
@@ -349,15 +415,19 @@ export default function Dashboard() {
                             <Link to="/admin/alerts" className="view-all">View all</Link>
                         </div>
                         <div className="alerts-list">
-                            {recentAlerts.map((alert) => (
-                                <div key={alert.id} className="alert-item">
-                                    <div className={`alert-indicator ${alert.severity}`}></div>
-                                    <div className="alert-content">
-                                        <p className="alert-message">{alert.message}</p>
-                                        <span className="alert-time">{alert.time}</span>
+                            {recentAlerts.length > 0 ? (
+                                recentAlerts.map((alert) => (
+                                    <div key={alert.id} className="alert-item">
+                                        <div className={`alert-indicator ${alert.severity}`}></div>
+                                        <div className="alert-content">
+                                            <p className="alert-message">{alert.message}</p>
+                                            <span className="alert-time">{alert.time}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                <p className="no-data">No recent alerts</p>
+                            )}
                         </div>
                     </div>
 
@@ -368,18 +438,22 @@ export default function Dashboard() {
                             <Link to="/admin/live-traffic" className="view-all">View all</Link>
                         </div>
                         <div className="junctions-list">
-                            {topJunctions.map((junction) => (
-                                <div key={junction.id} className="junction-item">
-                                    <div className="junction-info">
-                                        <span className={`signal-indicator ${junction.status}`}></span>
-                                        <div>
-                                            <p className="junction-name">{junction.name}</p>
-                                            <span className="junction-id">{junction.id}</span>
+                            {topJunctions.length > 0 ? (
+                                topJunctions.map((junction) => (
+                                    <div key={junction.id} className="junction-item">
+                                        <div className="junction-info">
+                                            <span className={`signal-indicator ${junction.status}`}></span>
+                                            <div>
+                                                <p className="junction-name">{junction.name}</p>
+                                                <span className="junction-id">{junction.id}</span>
+                                            </div>
                                         </div>
+                                        <span className="junction-count">{junction.vehicleCount} vehicles/hr</span>
                                     </div>
-                                    <span className="junction-count">{junction.vehicleCount} vehicles/hr</span>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                <p className="no-data">No junction data</p>
+                            )}
                         </div>
                     </div>
                 </div>

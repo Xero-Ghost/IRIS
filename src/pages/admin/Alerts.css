@@ -290,6 +290,16 @@
 
 .snapshot-container {
     margin-bottom: 20px;
+    position: relative;
+}
+
+.accident-snapshot {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: var(--radius);
+    background: var(--bg-tertiary);
 }
 
 .snapshot-placeholder {

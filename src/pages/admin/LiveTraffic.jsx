@@ -1,10 +1,11 @@
-import { useState } from 'react'
-import { Search, Filter, Car, Bike, Truck, MapPin, TrendingUp, BarChart3 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, Filter, Car, Bike, Truck, MapPin, TrendingUp, BarChart3, Loader } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Popup, CircleMarker, useMap } from 'react-leaflet'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart, Legend } from 'recharts'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './LiveTraffic.css'
+import { junctionsAPI, trafficDataAPI } from '../../services/api'
 
 // Fix for default marker icons in Leaflet with webpack/vite
 delete L.Icon.Default.prototype._getIconUrl
@@ -40,8 +41,8 @@ const createCustomIcon = (isSelected) => {
     })
 }
 
-// Sample junction data with real lat/lng coordinates (Bangalore, India area)
-const junctionsData = [
+// Default junction data (will be replaced by API data)
+const defaultJunctionsData = [
     {
         id: 'J-001',
         name: 'City Center',
@@ -51,77 +52,16 @@ const junctionsData = [
         avgWait: '28s',
         coordinates: { lat: 12.9716, lng: 77.5946 },
     },
-    {
-        id: 'J-002',
-        name: 'MG Road Crossing',
-        status: 'yellow',
-        vehicles: { twoWheeler: 178, lightVehicle: 112, heavyVehicle: 8 },
-        totalFlow: 298,
-        avgWait: '45s',
-        coordinates: { lat: 12.9758, lng: 77.6066 },
-    },
-    {
-        id: 'J-003',
-        name: 'Railway Station',
-        status: 'red',
-        vehicles: { twoWheeler: 210, lightVehicle: 156, heavyVehicle: 24 },
-        totalFlow: 390,
-        avgWait: '62s',
-        coordinates: { lat: 12.9766, lng: 77.5713 },
-    },
-    {
-        id: 'J-004',
-        name: 'Industrial Area',
-        status: 'green',
-        vehicles: { twoWheeler: 67, lightVehicle: 45, heavyVehicle: 38 },
-        totalFlow: 150,
-        avgWait: '22s',
-        coordinates: { lat: 12.9634, lng: 77.6200 },
-    },
-    {
-        id: 'J-005',
-        name: 'Hospital Road',
-        status: 'green',
-        vehicles: { twoWheeler: 98, lightVehicle: 76, heavyVehicle: 5 },
-        totalFlow: 179,
-        avgWait: '31s',
-        coordinates: { lat: 12.9568, lng: 77.5810 },
-    },
-    {
-        id: 'J-006',
-        name: 'Market Square',
-        status: 'yellow',
-        vehicles: { twoWheeler: 189, lightVehicle: 134, heavyVehicle: 15 },
-        totalFlow: 338,
-        avgWait: '48s',
-        coordinates: { lat: 12.9850, lng: 77.5850 },
-    },
-    {
-        id: 'J-007',
-        name: 'Tech Park Gate',
-        status: 'green',
-        vehicles: { twoWheeler: 156, lightVehicle: 198, heavyVehicle: 3 },
-        totalFlow: 357,
-        avgWait: '35s',
-        coordinates: { lat: 12.9698, lng: 77.6150 },
-    },
-    {
-        id: 'J-008',
-        name: 'Stadium Junction',
-        status: 'green',
-        vehicles: { twoWheeler: 78, lightVehicle: 52, heavyVehicle: 7 },
-        totalFlow: 137,
-        avgWait: '18s',
-        coordinates: { lat: 12.9784, lng: 77.5990 },
-    },
 ]
 
-// Calculate total traffic flow across all junctions
-const totalTrafficFlow = junctionsData.reduce((sum, j) => sum + j.totalFlow, 0)
+// Calculate total traffic flow across all junctions (will be recalculated with real data)
+const getTotalTrafficFlow = (junctionsData) => junctionsData.reduce((sum, j) => sum + j.totalFlow, 0)
 
 // Calculate density percentage for each junction (contribution to total traffic)
-const getJunctionDensity = (junction) => {
-    return Math.round((junction.totalFlow / totalTrafficFlow) * 100)
+const getJunctionDensity = (junction, junctionsData) => {
+    const total = getTotalTrafficFlow(junctionsData)
+    if (total === 0) return 0
+    return Math.round((junction.totalFlow / total) * 100)
 }
 
 // Get density level based on traffic flow (Low, Medium, High)
@@ -132,11 +72,7 @@ const getDensityLevel = (totalFlow) => {
 }
 
 // Function to get density color based on traffic flow level
-const getDensityColor = (densityPercent) => {
-    // Find the junction by density percent to get actual flow
-    const junction = junctionsData.find(j => getJunctionDensity(j) === densityPercent)
-    const totalFlow = junction?.totalFlow || 0
-
+const getDensityColor = (totalFlow) => {
     if (totalFlow >= 300) return '#ef4444' // Red - High
     if (totalFlow >= 200) return '#eab308' // Yellow - Medium
     return '#22c55e' // Green - Low
@@ -149,10 +85,12 @@ const getColorByFlow = (totalFlow) => {
     return '#22c55e' // Green - Low
 }
 
-// Get heat circle radius based on density percentage
-const getHeatRadius = (densityPercent) => {
-    // Larger radius for higher density contribution
-    return 15 + (densityPercent * 1.5)
+// Get heat circle radius based on traffic flow
+const getHeatRadius = (totalFlow) => {
+    // Larger radius for higher traffic
+    if (totalFlow >= 300) return 40
+    if (totalFlow >= 200) return 30
+    return 20
 }
 
 // Seeded random for consistent data generation
@@ -162,7 +100,7 @@ const seededRandom = (seed) => {
 }
 
 // Generate sample hourly data for a junction (with consistent seed)
-const generateHourlyData = (junctionId) => {
+const generateHourlyData = (junctionId, junctionsData) => {
     const junction = junctionsData.find(j => j.id === junctionId)
     const baseFlow = junction?.totalFlow || 200
     const junctionIndex = junctionsData.findIndex(j => j.id === junctionId)
@@ -187,7 +125,7 @@ const generateHourlyData = (junctionId) => {
 }
 
 // Generate daily data for a month (with consistent seed)
-const generateDailyData = (junctionId) => {
+const generateDailyData = (junctionId, junctionsData) => {
     const junction = junctionsData.find(j => j.id === junctionId)
     const baseFlow = junction?.totalFlow || 200
     const junctionIndex = junctionsData.findIndex(j => j.id === junctionId)
@@ -207,7 +145,7 @@ const generateDailyData = (junctionId) => {
 }
 
 // Generate monthly data for a year (with consistent seed)
-const generateMonthlyData = (junctionId) => {
+const generateMonthlyData = (junctionId, junctionsData) => {
     const junction = junctionsData.find(j => j.id === junctionId)
     const baseFlow = junction?.totalFlow || 200
     const junctionIndex = junctionsData.findIndex(j => j.id === junctionId)
@@ -225,7 +163,7 @@ const generateMonthlyData = (junctionId) => {
 }
 
 // Generate comparative data for multiple junctions (with consistent seed)
-const generateComparativeHourlyData = (junctionIds) => {
+const generateComparativeHourlyData = (junctionIds, junctionsData) => {
     const hours = []
     for (let i = 0; i < 24; i++) {
         const hourData = { time: `${i.toString().padStart(2, '0')}:00` }
@@ -252,7 +190,7 @@ const generateComparativeHourlyData = (junctionIds) => {
     return hours
 }
 
-const generateComparativeDailyData = (junctionIds) => {
+const generateComparativeDailyData = (junctionIds, junctionsData) => {
     const days = []
     for (let i = 1; i <= 30; i++) {
         const dayData = { time: `Day ${i}` }
@@ -274,7 +212,7 @@ const generateComparativeDailyData = (junctionIds) => {
     return days
 }
 
-const generateComparativeMonthlyData = (junctionIds) => {
+const generateComparativeMonthlyData = (junctionIds, junctionsData) => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     return months.map((month, i) => {
         const monthData = { time: month }
@@ -307,9 +245,9 @@ function FlyToMarker({ position }) {
 }
 
 // Heat circle component with multiple layers for blur effect
-function HeatCircle({ center, densityPercent }) {
-    const color = getDensityColor(densityPercent)
-    const baseRadius = getHeatRadius(densityPercent)
+function HeatCircle({ center, totalFlow }) {
+    const color = getDensityColor(totalFlow)
+    const baseRadius = getHeatRadius(totalFlow)
 
     // Create multiple circles with decreasing opacity for blur effect
     return (
@@ -363,15 +301,61 @@ function HeatCircle({ center, densityPercent }) {
 }
 
 export default function LiveTraffic() {
+    const [junctionsData, setJunctionsData] = useState(defaultJunctionsData)
+    const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
-    const [selectedJunction, setSelectedJunction] = useState(junctionsData[0])
+    const [selectedJunction, setSelectedJunction] = useState(null)
     const [statusFilter, setStatusFilter] = useState('all')
     const [timeScale, setTimeScale] = useState('daily') // daily, monthly, yearly
     const [showComparison, setShowComparison] = useState(false)
-    const [compareJunctions, setCompareJunctions] = useState([junctionsData[0].id, junctionsData[2].id]) // Default compare 2 junctions
+    const [compareJunctions, setCompareJunctions] = useState([])
 
-    // Map center (Bangalore)
-    const mapCenter = [12.9716, 77.5946]
+    // Fetch junctions from API
+    useEffect(() => {
+        fetchJunctions()
+    }, [])
+
+    const fetchJunctions = async () => {
+        setLoading(true)
+        try {
+            const junctions = await junctionsAPI.getAll()
+            if (junctions && junctions.length > 0) {
+                const mappedJunctions = junctions.map((j, index) => ({
+                    id: j.id,
+                    name: j.name,
+                    status: getTrafficStatusFromPhases(j.total_phases),
+                    vehicles: {
+                        twoWheeler: Math.floor(Math.random() * 150) + 50,
+                        lightVehicle: Math.floor(Math.random() * 100) + 50,
+                        heavyVehicle: Math.floor(Math.random() * 30) + 5
+                    },
+                    totalFlow: Math.floor(Math.random() * 300) + 100,
+                    avgWait: `${Math.floor(Math.random() * 40) + 15}s`,
+                    coordinates: {
+                        lat: parseFloat(j.latitude) || 12.9716 + (index * 0.005),
+                        lng: parseFloat(j.longitude) || 77.5946 + (index * 0.005)
+                    }
+                }))
+                setJunctionsData(mappedJunctions)
+                setSelectedJunction(mappedJunctions[0])
+                setCompareJunctions([mappedJunctions[0].id, mappedJunctions[Math.min(2, mappedJunctions.length - 1)].id])
+            }
+        } catch (err) {
+            console.error('Failed to fetch junctions:', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const getTrafficStatusFromPhases = (phases) => {
+        if (!phases) return 'green'
+        if (phases <= 3) return 'green'
+        if (phases === 4) return 'yellow'
+        return 'red'
+    }
+
+    // Map center (Delhi, India)
+    const mapCenter = [28.6139, 77.2090]
 
     const filteredJunctions = junctionsData.filter(junction => {
         const matchesSearch = junction.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -398,13 +382,13 @@ export default function LiveTraffic() {
         if (!selectedJunction) return []
         switch (timeScale) {
             case 'daily':
-                return generateHourlyData(selectedJunction.id)
+                return generateHourlyData(selectedJunction.id, junctionsData)
             case 'monthly':
-                return generateDailyData(selectedJunction.id)
+                return generateDailyData(selectedJunction.id, junctionsData)
             case 'yearly':
-                return generateMonthlyData(selectedJunction.id)
+                return generateMonthlyData(selectedJunction.id, junctionsData)
             default:
-                return generateHourlyData(selectedJunction.id)
+                return generateHourlyData(selectedJunction.id, junctionsData)
         }
     }
 
@@ -412,13 +396,13 @@ export default function LiveTraffic() {
     const getComparativeChartData = () => {
         switch (timeScale) {
             case 'daily':
-                return generateComparativeHourlyData(compareJunctions)
+                return generateComparativeHourlyData(compareJunctions, junctionsData)
             case 'monthly':
-                return generateComparativeDailyData(compareJunctions)
+                return generateComparativeDailyData(compareJunctions, junctionsData)
             case 'yearly':
-                return generateComparativeMonthlyData(compareJunctions)
+                return generateComparativeMonthlyData(compareJunctions, junctionsData)
             default:
-                return generateComparativeHourlyData(compareJunctions)
+                return generateComparativeHourlyData(compareJunctions, junctionsData)
         }
     }
 
@@ -478,7 +462,7 @@ export default function LiveTraffic() {
 
                     <div className="junctions-scroll">
                         {filteredJunctions.map((junction) => {
-                            const densityPercent = getJunctionDensity(junction)
+                            const densityPercent = getJunctionDensity(junction, junctionsData)
                             const densityLevel = getDensityLevel(junction.totalFlow)
                             const isComparing = compareJunctions.includes(junction.id)
                             return (
@@ -547,7 +531,7 @@ export default function LiveTraffic() {
                     {/* Total Traffic Summary */}
                     <div className="total-traffic-summary">
                         <span>Total Network Flow:</span>
-                        <strong>{totalTrafficFlow} vehicles/hr</strong>
+                        <strong>{getTotalTrafficFlow(junctionsData)} vehicles/hr</strong>
                     </div>
                 </div>
 
@@ -559,7 +543,7 @@ export default function LiveTraffic() {
                                 <div className="details-header">
                                     <div>
                                         <h2>{selectedJunction.name}</h2>
-                                        <p>{selectedJunction.id} • Avg Wait: {selectedJunction.avgWait} • <strong>{getJunctionDensity(selectedJunction)}% of network traffic</strong></p>
+                                        <p>{selectedJunction.id} • Avg Wait: {selectedJunction.avgWait} • <strong>{getJunctionDensity(selectedJunction, junctionsData)}% of network traffic</strong></p>
                                     </div>
                                     <span className={`badge badge-${selectedJunction.status === 'green' ? 'success' : selectedJunction.status === 'yellow' ? 'warning' : 'danger'}`}>
                                         {selectedJunction.status.toUpperCase()}
@@ -602,7 +586,7 @@ export default function LiveTraffic() {
                                             <HeatCircle
                                                 key={`heat-${junction.id}`}
                                                 center={[junction.coordinates.lat, junction.coordinates.lng]}
-                                                densityPercent={getJunctionDensity(junction)}
+                                                totalFlow={junction.totalFlow}
                                             />
                                         ))}
 
@@ -629,7 +613,7 @@ export default function LiveTraffic() {
                                                             </div>
                                                             <div className="popup-stat">
                                                                 <span className="stat-label">Network Share</span>
-                                                                <span className="stat-value">{getJunctionDensity(junction)}%</span>
+                                                                <span className="stat-value">{getJunctionDensity(junction, junctionsData)}%</span>
                                                             </div>
                                                             <div className="popup-stat">
                                                                 <span className="stat-label">Avg Wait</span>
@@ -733,8 +717,8 @@ export default function LiveTraffic() {
                                             <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                                 <defs>
                                                     <linearGradient id="colorDensity" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
-                                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05}/>
+                                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
+                                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
                                                     </linearGradient>
                                                 </defs>
                                                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />

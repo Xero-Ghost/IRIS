@@ -1,39 +1,73 @@
-import { AlertTriangle, MapPin, Clock, AlertCircle } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { AlertTriangle, MapPin, Clock, AlertCircle, Loader } from 'lucide-react'
 import './PublicAlerts.css'
-
-// Sample public incidents
-const publicIncidents = [
-    {
-        id: 'I-001',
-        type: 'Accident',
-        junction: 'MG Road Crossing',
-        area: 'Central District',
-        time: '14:20',
-        status: 'active',
-        advice: 'Avoid this junction. Use Ring Road as alternate route.'
-    },
-    {
-        id: 'I-002',
-        type: 'Road Work',
-        junction: 'Industrial Area',
-        area: 'East Zone',
-        time: '09:00',
-        status: 'active',
-        advice: 'Lane 2 closed. Expect delays of 10-15 minutes.'
-    },
-    {
-        id: 'I-003',
-        type: 'Traffic Jam',
-        junction: 'Railway Station',
-        area: 'North District',
-        time: '17:30',
-        status: 'resolved',
-        advice: 'Traffic has been cleared. Normal flow resumed.'
-    },
-]
+import { alertsAPI, accidentsAPI } from '../../services/api'
 
 export default function PublicAlerts() {
-    const activeIncidents = publicIncidents.filter(i => i.status === 'active')
+    const [incidents, setIncidents] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        fetchIncidents()
+    }, [])
+
+    const fetchIncidents = async () => {
+        setLoading(true)
+        try {
+            const [alerts, accidents] = await Promise.all([
+                alertsAPI.getAll(null, 20).catch(() => []),
+                accidentsAPI.getAll({ limit: 10 }).catch(() => [])
+            ])
+
+            // Combine alerts and accidents into incidents
+            const mappedIncidents = []
+
+            // Add accidents as incidents
+            accidents.forEach(acc => {
+                mappedIncidents.push({
+                    id: `A-${acc.id}`,
+                    type: 'Accident',
+                    junction: acc.location || `Junction ${acc.junction_id}`,
+                    area: acc.junction_id || 'Unknown Area',
+                    time: new Date(acc.detected_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    status: acc.status === 'active' ? 'active' : 'resolved',
+                    advice: acc.description || 'Avoid this junction if possible.'
+                })
+            })
+
+            // Add alerts as incidents
+            alerts.forEach(alert => {
+                if (alert.type === 'incident' || alert.type === 'violation') {
+                    mappedIncidents.push({
+                        id: `AL-${alert.id}`,
+                        type: alert.type === 'incident' ? 'Traffic Incident' : 'Traffic Violation',
+                        junction: alert.junction_id || 'Multiple Junctions',
+                        area: 'City Area',
+                        time: new Date(alert.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        status: alert.status === 'active' ? 'active' : 'resolved',
+                        advice: alert.message || 'Please follow traffic guidelines.'
+                    })
+                }
+            })
+
+            setIncidents(mappedIncidents)
+        } catch (err) {
+            console.error('Failed to fetch incidents:', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const activeIncidents = incidents.filter(i => i.status === 'active')
+
+    if (loading) {
+        return (
+            <div className="public-alerts loading-state">
+                <Loader className="spin" size={32} />
+                <p>Loading alerts...</p>
+            </div>
+        )
+    }
 
     return (
         <div className="public-alerts">
@@ -52,43 +86,43 @@ export default function PublicAlerts() {
 
             {/* Incidents List */}
             <div className="incidents-list">
-                {publicIncidents.map((incident) => (
-                    <div key={incident.id} className={`incident-card ${incident.status}`}>
-                        <div className="incident-header">
-                            <div className="incident-type">
-                                <AlertTriangle size={20} />
-                                <span>{incident.type}</span>
+                {incidents.length > 0 ? (
+                    incidents.map((incident) => (
+                        <div key={incident.id} className={`incident-card ${incident.status}`}>
+                            <div className="incident-header">
+                                <div className="incident-type">
+                                    <AlertTriangle size={20} />
+                                    <span>{incident.type}</span>
+                                </div>
+                                <span className={`status-badge ${incident.status}`}>
+                                    {incident.status === 'active' ? '● Active' : '✓ Resolved'}
+                                </span>
                             </div>
-                            <span className={`status-badge ${incident.status}`}>
-                                {incident.status === 'active' ? '● Active' : '✓ Resolved'}
-                            </span>
-                        </div>
 
-                        <div className="incident-details">
-                            <div className="detail-row">
-                                <MapPin size={16} />
-                                <span><strong>{incident.junction}</strong> - {incident.area}</span>
+                            <div className="incident-details">
+                                <div className="detail-row">
+                                    <MapPin size={16} />
+                                    <span><strong>{incident.junction}</strong> - {incident.area}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <Clock size={16} />
+                                    <span>Reported at {incident.time}</span>
+                                </div>
                             </div>
-                            <div className="detail-row">
-                                <Clock size={16} />
-                                <span>Reported at {incident.time}</span>
-                            </div>
-                        </div>
 
-                        <div className="incident-advice">
-                            <strong>Advice:</strong> {incident.advice}
+                            <div className="incident-advice">
+                                <strong>Advice:</strong> {incident.advice}
+                            </div>
                         </div>
+                    ))
+                ) : (
+                    <div className="no-incidents">
+                        <AlertTriangle size={48} />
+                        <h3>No Incidents Reported</h3>
+                        <p>All junctions are operating normally</p>
                     </div>
-                ))}
+                )}
             </div>
-
-            {publicIncidents.length === 0 && (
-                <div className="no-incidents">
-                    <AlertTriangle size={48} />
-                    <h3>No Incidents Reported</h3>
-                    <p>All junctions are operating normally</p>
-                </div>
-            )}
 
             <div className="public-note">
                 <AlertTriangle size={16} />

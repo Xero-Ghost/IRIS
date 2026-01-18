@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Eye, User, Users, ArrowRight } from 'lucide-react'
+import { Eye, User, Users, ArrowRight, Loader } from 'lucide-react'
 import './Login.css'
 
 export default function Login() {
@@ -9,21 +9,23 @@ export default function Login() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
     const { login } = useAuth()
     const navigate = useNavigate()
 
     const handleRoleSelect = (selectedRole) => {
         if (selectedRole === 'public') {
-            const result = login('', '', 'public')
-            if (result.success) {
-                navigate(result.redirect)
-            }
+            login('', '', 'public').then(result => {
+                if (result.success) {
+                    navigate(result.redirect)
+                }
+            })
         } else {
             setRole(selectedRole)
         }
     }
 
-    const handleAdminLogin = (e) => {
+    const handleAdminLogin = async (e) => {
         e.preventDefault()
         setError('')
 
@@ -32,11 +34,18 @@ export default function Login() {
             return
         }
 
-        const result = login(username, password, 'admin')
-        if (result.success) {
-            navigate(result.redirect)
-        } else {
-            setError(result.error)
+        setIsLoading(true)
+        try {
+            const result = await login(username, password, 'admin')
+            if (result.success) {
+                navigate(result.redirect)
+            } else {
+                setError(result.error)
+            }
+        } catch (err) {
+            setError('Connection error. Please try again.')
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -111,8 +120,8 @@ export default function Login() {
                             />
                         </div>
 
-                        <button type="submit" className="btn btn-primary btn-lg login-submit">
-                            Sign In
+                        <button type="submit" className="btn btn-primary btn-lg login-submit" disabled={isLoading}>
+                            {isLoading ? 'Signing in...' : 'Sign In'}
                         </button>
 
                         <button

@@ -1,21 +1,66 @@
-import { MapPin, Clock, TrendingUp, AlertTriangle } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { MapPin, Clock, TrendingUp, AlertTriangle, Loader } from 'lucide-react'
 import './PublicTraffic.css'
-
-// Sample junction traffic status
-const junctionStatus = [
-    { id: 'J-001', name: 'City Center', traffic: 'low', waitTime: '15s' },
-    { id: 'J-002', name: 'MG Road Crossing', traffic: 'high', waitTime: '45s' },
-    { id: 'J-003', name: 'Railway Station', traffic: 'high', waitTime: '52s' },
-    { id: 'J-004', name: 'Industrial Area', traffic: 'medium', waitTime: '28s' },
-    { id: 'J-005', name: 'Hospital Road', traffic: 'low', waitTime: '12s' },
-    { id: 'J-006', name: 'Market Square', traffic: 'high', waitTime: '48s' },
-    { id: 'J-007', name: 'Tech Park Gate', traffic: 'medium', waitTime: '32s' },
-    { id: 'J-008', name: 'Stadium Junction', traffic: 'low', waitTime: '18s' },
-    { id: 'J-009', name: 'Bus Stand', traffic: 'medium', waitTime: '35s' },
-    { id: 'J-010', name: 'University Gate', traffic: 'low', waitTime: '20s' },
-]
+import { junctionsAPI, systemStatsAPI } from '../../services/api'
 
 export default function PublicTraffic() {
+    const [junctionStatus, setJunctionStatus] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [stats, setStats] = useState({
+        highTrafficCount: 0,
+        avgWaitTime: 0,
+        efficiency: 92
+    })
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    const fetchData = async () => {
+        setLoading(true)
+        try {
+            const [junctions, systemStats] = await Promise.all([
+                junctionsAPI.getAll(),
+                systemStatsAPI.get().catch(() => null)
+            ])
+
+            if (junctions && junctions.length > 0) {
+                const mappedJunctions = junctions.map(j => {
+                    const waitTime = Math.floor(Math.random() * 50) + 10
+                    return {
+                        id: j.id,
+                        name: j.name,
+                        traffic: getTrafficLevel(j.total_phases),
+                        waitTime: `${waitTime}s`
+                    }
+                })
+                setJunctionStatus(mappedJunctions)
+
+                // Calculate stats
+                const highTraffic = mappedJunctions.filter(j => j.traffic === 'high').length
+                const avgWait = Math.round(
+                    mappedJunctions.reduce((acc, j) => acc + parseInt(j.waitTime), 0) / mappedJunctions.length
+                )
+                setStats({
+                    highTrafficCount: highTraffic,
+                    avgWaitTime: avgWait,
+                    efficiency: systemStats?.avg_wait_time ? Math.min(95, 100 - Math.floor(parseFloat(systemStats.avg_wait_time) / 2)) : 92
+                })
+            }
+        } catch (err) {
+            console.error('Failed to fetch data:', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const getTrafficLevel = (phases) => {
+        if (!phases) return 'medium'
+        if (phases <= 3) return 'low'
+        if (phases === 4) return 'medium'
+        return 'high'
+    }
+
     const getTrafficColor = (level) => {
         switch (level) {
             case 'low': return 'success'
@@ -25,8 +70,14 @@ export default function PublicTraffic() {
         }
     }
 
-    const highTrafficCount = junctionStatus.filter(j => j.traffic === 'high').length
-    const avgWaitTime = Math.round(junctionStatus.reduce((acc, j) => acc + parseInt(j.waitTime), 0) / junctionStatus.length)
+    if (loading) {
+        return (
+            <div className="public-traffic loading-state">
+                <Loader className="spin" size={32} />
+                <p>Loading traffic data...</p>
+            </div>
+        )
+    }
 
     return (
         <div className="public-traffic">
@@ -42,7 +93,7 @@ export default function PublicTraffic() {
                         <AlertTriangle size={24} />
                     </div>
                     <div>
-                        <span className="stat-value">{highTrafficCount}</span>
+                        <span className="stat-value">{stats.highTrafficCount}</span>
                         <span className="stat-label">High Traffic Junctions</span>
                     </div>
                 </div>
@@ -51,7 +102,7 @@ export default function PublicTraffic() {
                         <Clock size={24} />
                     </div>
                     <div>
-                        <span className="stat-value">{avgWaitTime}s</span>
+                        <span className="stat-value">{stats.avgWaitTime}s</span>
                         <span className="stat-label">Average Wait Time</span>
                     </div>
                 </div>
@@ -60,7 +111,7 @@ export default function PublicTraffic() {
                         <TrendingUp size={24} />
                     </div>
                     <div>
-                        <span className="stat-value">92%</span>
+                        <span className="stat-value">{stats.efficiency}%</span>
                         <span className="stat-label">Signal Efficiency</span>
                     </div>
                 </div>
@@ -75,24 +126,28 @@ export default function PublicTraffic() {
 
             {/* Junction List */}
             <div className="junction-grid">
-                {junctionStatus.map((junction) => (
-                    <div key={junction.id} className={`junction-status-card ${junction.traffic}`}>
-                        <div className="junction-status-header">
-                            <span className={`traffic-badge ${getTrafficColor(junction.traffic)}`}>
-                                {junction.traffic.toUpperCase()}
-                            </span>
-                            <span className="wait-time">
-                                <Clock size={14} />
-                                {junction.waitTime}
-                            </span>
+                {junctionStatus.length > 0 ? (
+                    junctionStatus.map((junction) => (
+                        <div key={junction.id} className={`junction-status-card ${junction.traffic}`}>
+                            <div className="junction-status-header">
+                                <span className={`traffic-badge ${getTrafficColor(junction.traffic)}`}>
+                                    {junction.traffic.toUpperCase()}
+                                </span>
+                                <span className="wait-time">
+                                    <Clock size={14} />
+                                    {junction.waitTime}
+                                </span>
+                            </div>
+                            <h3 className="junction-name">{junction.name}</h3>
+                            <p className="junction-id">
+                                <MapPin size={14} />
+                                {junction.id}
+                            </p>
                         </div>
-                        <h3 className="junction-name">{junction.name}</h3>
-                        <p className="junction-id">
-                            <MapPin size={14} />
-                            {junction.id}
-                        </p>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <p className="no-data">No junction data available</p>
+                )}
             </div>
 
             <div className="public-note">

@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Edit2, Trash2, Camera, Settings, Clock, X, Check, ChevronDown, AlertTriangle, Route } from 'lucide-react'
+import { Plus, Edit2, Trash2, Camera, Settings, Clock, X, Check, ChevronDown, AlertTriangle, Route, Loader } from 'lucide-react'
 import { useCorridor } from '../../context/CorridorContext'
 import { Link } from 'react-router-dom'
 import './SignalControl.css'
+import { junctionsAPI, camerasAPI } from '../../services/api'
 
 // Constants
 const YELLOW_TIME = 3 // Yellow is always 3 seconds
@@ -138,12 +139,66 @@ const getPhaseDetails = (junction) => {
 
 export default function SignalControl() {
     const { activeCorridor, corridorStatus, isJunctionInCorridor, getJunctionPhaseState } = useCorridor()
-    const [junctions, setJunctions] = useState(initialJunctions)
+    const [junctions, setJunctions] = useState([])
+    const [availableCameras, setAvailableCameras] = useState([])
+    const [loading, setLoading] = useState(true)
     const [showModal, setShowModal] = useState(false)
     const [showManualModal, setShowManualModal] = useState(false)
     const [editingJunction, setEditingJunction] = useState(null)
-    const [selectedJunction, setSelectedJunction] = useState(initialJunctions[0]) // Select first by default
-    const [openDropdownId, setOpenDropdownId] = useState(null) // For custom dropdown
+    const [selectedJunction, setSelectedJunction] = useState(null)
+    const [openDropdownId, setOpenDropdownId] = useState(null)
+
+    // Fetch junctions and cameras on mount
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    const fetchData = async () => {
+        setLoading(true)
+        try {
+            const [junctionsData, camerasData] = await Promise.all([
+                junctionsAPI.getAll(),
+                camerasAPI.getAll()
+            ])
+
+            // Map junctions from API to component format
+            const mappedJunctions = junctionsData.map(j => ({
+                id: j.id,
+                name: j.name,
+                phases: j.total_phases || 4,
+                cameras: [], // Will be populated from cameras API
+                greenTimes: Array(j.total_phases || 4).fill(30),
+                status: j.status || 'active',
+                mode: 'adaptive',
+                location: {
+                    lat: parseFloat(j.latitude) || 12.9716,
+                    lng: parseFloat(j.longitude) || 77.5946
+                }
+            }))
+
+            // Map cameras to junctions
+            camerasData.forEach(cam => {
+                const junction = mappedJunctions.find(j => j.id === cam.junction_id)
+                if (junction) {
+                    junction.cameras.push(cam.id)
+                }
+            })
+
+            setJunctions(mappedJunctions)
+            setAvailableCameras(camerasData.map(c => c.id))
+            if (mappedJunctions.length > 0) {
+                setSelectedJunction(mappedJunctions[0])
+            }
+        } catch (err) {
+            console.error('Failed to fetch data:', err)
+            // Fall back to default data if API fails
+            setJunctions(initialJunctions)
+            setAvailableCameras(['CAM-001', 'CAM-002', 'CAM-003', 'CAM-004'])
+            setSelectedJunction(initialJunctions[0])
+        } finally {
+            setLoading(false)
+        }
+    }
 
     // Timer states - always running
     const [activePhase, setActivePhase] = useState(0)
@@ -459,81 +514,81 @@ export default function SignalControl() {
                                 {junctions.map((junction) => {
                                     const inCorridor = isJunctionInCorridor(junction.id)
                                     return (
-                                    <tr
-                                        key={junction.id}
-                                        className={`${selectedJunction?.id === junction.id ? 'selected' : ''} ${inCorridor ? 'in-corridor' : ''}`}
-                                        onClick={() => setSelectedJunction(junction)}
-                                    >
-                                        <td>
-                                            <strong>{junction.id}</strong>
-                                            {inCorridor && <span className="corridor-badge">🚨</span>}
-                                        </td>
-                                        <td>{junction.name}</td>
-                                        <td>{junction.phases}</td>
-                                        <td><span className="cycle-time">{calculateTotalCycleTime(junction)}s</span></td>
-                                        <td onClick={(e) => e.stopPropagation()}>
-                                            <div className="custom-dropdown" ref={openDropdownId === junction.id ? dropdownRef : null}>
-                                                <button
-                                                    className={`dropdown-trigger ${junction.mode}`}
-                                                    onClick={() => setOpenDropdownId(openDropdownId === junction.id ? null : junction.id)}
-                                                >
-                                                    <span className={`mode-icon ${junction.mode}`}></span>
-                                                    <span className="mode-text">{junction.mode}</span>
-                                                    <ChevronDown size={14} className={`dropdown-arrow ${openDropdownId === junction.id ? 'open' : ''}`} />
-                                                </button>
-                                                {openDropdownId === junction.id && (
-                                                    <div className="dropdown-menu">
-                                                        <div className="dropdown-header">Select Mode</div>
-                                                        <button
-                                                            className={`dropdown-item ${junction.mode === 'default' ? 'active' : ''}`}
-                                                            onClick={() => { handleModeChange(junction.id, 'default'); setOpenDropdownId(null); }}
-                                                        >
-                                                            <span className="mode-icon default"></span>
-                                                            <div className="dropdown-item-content">
-                                                                <span className="dropdown-item-title">Default</span>
-                                                                <span className="dropdown-item-desc">Fixed timing cycle</span>
-                                                            </div>
-                                                        </button>
-                                                        <button
-                                                            className={`dropdown-item ${junction.mode === 'manual' ? 'active' : ''}`}
-                                                            onClick={() => { handleModeChange(junction.id, 'manual'); setOpenDropdownId(null); }}
-                                                        >
-                                                            <span className="mode-icon manual"></span>
-                                                            <div className="dropdown-item-content">
-                                                                <span className="dropdown-item-title">Manual</span>
-                                                                <span className="dropdown-item-desc">Custom timing control</span>
-                                                            </div>
-                                                        </button>
-                                                        <button
-                                                            className={`dropdown-item ${junction.mode === 'adaptive' ? 'active' : ''}`}
-                                                            onClick={() => { handleModeChange(junction.id, 'adaptive'); setOpenDropdownId(null); }}
-                                                        >
-                                                            <span className="mode-icon adaptive"></span>
-                                                            <div className="dropdown-item-content">
-                                                                <span className="dropdown-item-title">Adaptive</span>
-                                                                <span className="dropdown-item-desc">AI-based optimization</span>
-                                                            </div>
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className={`badge badge-${junction.status === 'active' ? 'success' : 'warning'}`}>
-                                                {junction.status}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div className="action-buttons">
-                                                <button className="icon-btn" onClick={(e) => { e.stopPropagation(); openEditModal(junction); }}>
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button className="icon-btn danger" onClick={(e) => { e.stopPropagation(); handleDelete(junction.id); }}>
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                        <tr
+                                            key={junction.id}
+                                            className={`${selectedJunction?.id === junction.id ? 'selected' : ''} ${inCorridor ? 'in-corridor' : ''}`}
+                                            onClick={() => setSelectedJunction(junction)}
+                                        >
+                                            <td>
+                                                <strong>{junction.id}</strong>
+                                                {inCorridor && <span className="corridor-badge">🚨</span>}
+                                            </td>
+                                            <td>{junction.name}</td>
+                                            <td>{junction.phases}</td>
+                                            <td><span className="cycle-time">{calculateTotalCycleTime(junction)}s</span></td>
+                                            <td onClick={(e) => e.stopPropagation()}>
+                                                <div className="custom-dropdown" ref={openDropdownId === junction.id ? dropdownRef : null}>
+                                                    <button
+                                                        className={`dropdown-trigger ${junction.mode}`}
+                                                        onClick={() => setOpenDropdownId(openDropdownId === junction.id ? null : junction.id)}
+                                                    >
+                                                        <span className={`mode-icon ${junction.mode}`}></span>
+                                                        <span className="mode-text">{junction.mode}</span>
+                                                        <ChevronDown size={14} className={`dropdown-arrow ${openDropdownId === junction.id ? 'open' : ''}`} />
+                                                    </button>
+                                                    {openDropdownId === junction.id && (
+                                                        <div className="dropdown-menu">
+                                                            <div className="dropdown-header">Select Mode</div>
+                                                            <button
+                                                                className={`dropdown-item ${junction.mode === 'default' ? 'active' : ''}`}
+                                                                onClick={() => { handleModeChange(junction.id, 'default'); setOpenDropdownId(null); }}
+                                                            >
+                                                                <span className="mode-icon default"></span>
+                                                                <div className="dropdown-item-content">
+                                                                    <span className="dropdown-item-title">Default</span>
+                                                                    <span className="dropdown-item-desc">Fixed timing cycle</span>
+                                                                </div>
+                                                            </button>
+                                                            <button
+                                                                className={`dropdown-item ${junction.mode === 'manual' ? 'active' : ''}`}
+                                                                onClick={() => { handleModeChange(junction.id, 'manual'); setOpenDropdownId(null); }}
+                                                            >
+                                                                <span className="mode-icon manual"></span>
+                                                                <div className="dropdown-item-content">
+                                                                    <span className="dropdown-item-title">Manual</span>
+                                                                    <span className="dropdown-item-desc">Custom timing control</span>
+                                                                </div>
+                                                            </button>
+                                                            <button
+                                                                className={`dropdown-item ${junction.mode === 'adaptive' ? 'active' : ''}`}
+                                                                onClick={() => { handleModeChange(junction.id, 'adaptive'); setOpenDropdownId(null); }}
+                                                            >
+                                                                <span className="mode-icon adaptive"></span>
+                                                                <div className="dropdown-item-content">
+                                                                    <span className="dropdown-item-title">Adaptive</span>
+                                                                    <span className="dropdown-item-desc">AI-based optimization</span>
+                                                                </div>
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span className={`badge badge-${junction.status === 'active' ? 'success' : 'warning'}`}>
+                                                    {junction.status}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div className="action-buttons">
+                                                    <button className="icon-btn" onClick={(e) => { e.stopPropagation(); openEditModal(junction); }}>
+                                                        <Edit2 size={16} />
+                                                    </button>
+                                                    <button className="icon-btn danger" onClick={(e) => { e.stopPropagation(); handleDelete(junction.id); }}>
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     )
                                 })}
                             </tbody>

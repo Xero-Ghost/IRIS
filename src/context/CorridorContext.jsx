@@ -2,13 +2,13 @@ import { createContext, useContext, useState, useEffect } from 'react'
 
 const CorridorContext = createContext()
 
-// Junction data shared between Green Corridor and Signal Control
+// Junction data shared between Green Corridor and Signal Control (Delhi coordinates)
 export const signalJunctions = [
     {
         id: 'J-001',
         name: 'City Center',
-        lat: 12.9716,
-        lng: 77.5946,
+        lat: 28.6139,
+        lng: 77.2090,
         phases: 4,
         status: 'active',
         adjacentTo: ['J-002', 'J-005']
@@ -16,8 +16,8 @@ export const signalJunctions = [
     {
         id: 'J-002',
         name: 'MG Road Crossing',
-        lat: 12.9756,
-        lng: 77.6066,
+        lat: 28.6180,
+        lng: 77.2150,
         phases: 4,
         status: 'active',
         adjacentTo: ['J-001', 'J-003', 'J-006']
@@ -25,8 +25,8 @@ export const signalJunctions = [
     {
         id: 'J-003',
         name: 'Railway Station',
-        lat: 12.9779,
-        lng: 77.5728,
+        lat: 28.6420,
+        lng: 77.2190,
         phases: 3,
         status: 'active',
         adjacentTo: ['J-002', 'J-004', 'J-005']
@@ -34,8 +34,8 @@ export const signalJunctions = [
     {
         id: 'J-004',
         name: 'Industrial Area',
-        lat: 12.9850,
-        lng: 77.6150,
+        lat: 28.5950,
+        lng: 77.2400,
         phases: 4,
         status: 'active',
         adjacentTo: ['J-003', 'J-006']
@@ -43,35 +43,35 @@ export const signalJunctions = [
     {
         id: 'J-005',
         name: 'Hospital Road',
-        lat: 12.9600,
-        lng: 77.5800,
+        lat: 28.6280,
+        lng: 77.2250,
         phases: 4,
         status: 'active',
         adjacentTo: ['J-001', 'J-003', 'J-007']
     },
     {
         id: 'J-006',
-        name: 'Tech Park Gate',
-        lat: 12.9680,
-        lng: 77.6200,
+        name: 'Market Square',
+        lat: 28.6350,
+        lng: 77.2280,
         phases: 4,
         status: 'active',
         adjacentTo: ['J-002', 'J-004', 'J-008']
     },
     {
         id: 'J-007',
-        name: 'Stadium Junction',
-        lat: 12.9550,
-        lng: 77.5900,
+        name: 'Tech Park Gate',
+        lat: 28.5550,
+        lng: 77.2600,
         phases: 4,
         status: 'active',
         adjacentTo: ['J-005', 'J-008']
     },
     {
         id: 'J-008',
-        name: 'Market Square',
-        lat: 12.9620,
-        lng: 77.6100,
+        name: 'Stadium Junction',
+        lat: 28.6100,
+        lng: 77.2320,
         phases: 4,
         status: 'active',
         adjacentTo: ['J-006', 'J-007']
