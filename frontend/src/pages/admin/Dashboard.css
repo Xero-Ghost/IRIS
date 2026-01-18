@@ -1,0 +1,539 @@
+.dashboard {}
+
+.stats-grid {
+    margin-bottom: 24px;
+}
+
+/* Accidents Banner */
+.accidents-banner {
+    background: linear-gradient(135deg, var(--danger-light) 0%, #fecaca 100%);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-lg);
+    padding: 12px 20px;
+    margin-bottom: 24px;
+}
+
+.accidents-banner-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--danger);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.accidents-banner-header .btn {
+    margin-left: auto;
+}
+
+/* Accidents Section */
+.accidents-section {
+    margin-bottom: 24px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+}
+
+.section-title svg {
+    color: var(--danger);
+}
+
+.accidents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 16px;
+}
+
+.accident-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    border-left: 4px solid var(--warning);
+}
+
+.accident-card.severity-4,
+.accident-card.severity-5 {
+    border-left-color: var(--danger);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--danger-light) 100%);
+}
+
+.accident-card.severity-3 {
+    border-left-color: var(--warning);
+}
+
+.accident-card.severity-1,
+.accident-card.severity-2 {
+    border-left-color: var(--success);
+}
+
+.accident-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.accident-location-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.accident-time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Severity Scale */
+.severity-section {
+    margin-bottom: 12px;
+}
+
+.severity-label {
+    display: block;
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+}
+
+.severity-scale {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.severity-bar {
+    width: 24px;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    transition: background var(--transition);
+}
+
+.severity-bar.active:nth-child(1) { background: var(--success); }
+.severity-bar.active:nth-child(2) { background: #84cc16; }
+.severity-bar.active:nth-child(3) { background: var(--warning); }
+.severity-bar.active:nth-child(4) { background: #f97316; }
+.severity-bar.active:nth-child(5) { background: var(--danger); }
+
+.severity-text {
+    margin-left: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.accident-card .accident-description {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+/* Response Status */
+.response-status {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.response-status .response-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+}
+
+.response-status .response-item.dispatched {
+    background: var(--success-light);
+    border-color: var(--success);
+}
+
+.response-status .response-item.dispatched svg {
+    color: var(--success);
+}
+
+.response-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.response-type {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.response-eta {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Hospital Contact */
+.hospital-contact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--primary-light);
+    border-radius: var(--radius);
+}
+
+.hospital-name {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.hospital-phone {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.hospital-phone:hover {
+    color: var(--primary-hover);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+}
+
+.map-card {
+    min-height: 400px;
+}
+
+/* Map Container for OpenStreetMap */
+.map-container {
+    position: relative;
+    height: 320px;
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.map-container .leaflet-container {
+    height: 100%;
+    width: 100%;
+    border-radius: var(--radius);
+}
+
+/* Custom Accident Marker Icon */
+.accident-marker-icon {
+    background: transparent !important;
+    border: none !important;
+}
+
+.accident-marker-icon .accident-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    z-index: 10;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    animation: bounce-accident 0.6s ease-in-out infinite alternate;
+}
+
+.accident-marker-icon .accident-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(220, 38, 38, 0.4);
+    border-radius: 50%;
+    animation: pulse-accident 1.5s ease-out infinite;
+}
+
+@keyframes pulse-accident {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes bounce-accident {
+    from { transform: translate(-50%, -50%) translateY(0); }
+    to { transform: translate(-50%, -50%) translateY(-5px); }
+}
+
+/* Map Popup Styles */
+.map-popup {
+    min-width: 140px;
+}
+
+.map-popup.accident {
+    min-width: 160px;
+}
+
+.map-popup .popup-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.map-popup .popup-header.accident {
+    background: var(--danger-light);
+    margin: -10px -10px 8px -10px;
+    padding: 8px 10px;
+    border-radius: 4px 4px 0 0;
+    border-bottom: 2px solid var(--danger);
+}
+
+.map-popup .accident-badge {
+    color: var(--danger);
+    font-weight: 700;
+    font-size: 0.8125rem;
+}
+
+.map-popup .popup-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.map-popup .popup-accident {
+    color: var(--danger);
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* Map Legend - positioned over the map */
+.map-legend {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    display: flex;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    z-index: 1000;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.6875rem;
+    color: white;
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.legend-dot.green { background: var(--success); }
+.legend-dot.yellow { background: var(--warning); }
+.legend-dot.red { background: var(--danger); }
+
+.legend-accident {
+    font-size: 0.75rem;
+}
+
+/* Status dots in popups */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-dot.green { background: var(--success); }
+.status-dot.yellow { background: var(--warning); }
+.status-dot.red { background: var(--danger); }
+
+.map-placeholder {
+    height: 320px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.map-message {
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.map-message svg {
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.map-message p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.map-message span {
+    font-size: 0.75rem;
+}
+
+.dashboard-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.view-all {
+    font-size: 0.8125rem;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.view-all:hover {
+    text-decoration: underline;
+}
+
+/* Alerts List */
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.alert-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.alert-indicator {
+    width: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.alert-indicator.warning {
+    background: var(--warning);
+}
+
+.alert-indicator.danger {
+    background: var(--danger);
+}
+
+.alert-indicator.success {
+    background: var(--success);
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-message {
+    font-size: 0.8125rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.alert-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Junctions List */
+.junctions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.junction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.junction-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.junction-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.junction-id {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.junction-count {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-sidebar {
+        flex-direction: row;
+    }
+
+    .dashboard-sidebar .card {
+        flex: 1;
+    }
+
+    .accidents-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-sidebar {
+        flex-direction: column;
+    }
+
+    .response-status {
+        flex-direction: column;
+    }
+}

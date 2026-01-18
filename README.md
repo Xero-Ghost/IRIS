@@ -1,147 +1,470 @@
-IRIS – Intelligent Roadway Infrastructure System (Prototype)
+# IRIS - Intelligent Roadway Infrastructure System
 
-A basic computer-vision prototype for detecting vehicles from CCTV feeds, counting traffic inside a selected ROI, and generating a simple traffic-light timing cycle.
+A comprehensive traffic management platform that leverages computer vision and machine learning to optimize traffic signal timing, detect accidents, and provide real-time traffic analytics.
 
-🚀 How the Current Version Works
+---
 
-The workflow runs in two steps:
+## Table of Contents
 
-Vehicle Counting → prototype.py
+- [Overview](#overview)
+- [System Architecture](#system-architecture)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [Computer Vision Scripts](#computer-vision-scripts)
+- [Database Schema](#database-schema)
+- [Installation](#installation)
+- [Running the Application](#running-the-application)
+- [API Reference](#api-reference)
+- [Current Limitations](#current-limitations)
+- [Production Roadmap](#production-roadmap)
 
-Traffic Timer Calculation → traffic_cycle.py
+---
 
-<br>
-🟩 Step 1: Run Vehicle Detection & Counting
+## Overview
 
-Navigate to the versions/ folder and run:
+IRIS is an intelligent traffic management system designed to modernize urban traffic infrastructure. The system uses YOLO-based object detection models to analyze traffic footage, classify vehicles, detect accidents, and calculate optimal signal timings based on real-time traffic density.
 
-python prototype.py
+### Key Objectives
 
-✔ What this does:
+- **Adaptive Signal Control**: Dynamically adjust traffic signal timings based on real-time vehicle counts
+- **Accident Detection**: Automated detection of road accidents with evidence capture and alerting
+- **Traffic Analytics**: Comprehensive data collection and visualization for traffic patterns
+- **Green Corridor Management**: Priority routing for emergency vehicles across multiple junctions
 
-Loads the sample video video2.mp4
+---
 
-Shows the first frame and asks you to select an ROI (Region of Interest)
+## System Architecture
 
-Detects & tracks vehicles using YOLO
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                              IRIS System                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌──────────────┐     ┌──────────────┐     ┌──────────────────────────┐ │
+│  │   Frontend   │────▶│   Backend    │────▶│    PostgreSQL Database   │ │
+│  │  (React/Vite)│◀────│  (FastAPI)   │◀────│                          │ │
+│  └──────────────┘     └──────────────┘     └──────────────────────────┘ │
+│                              │                                           │
+│                              │                                           │
+│                    ┌─────────▼─────────┐                                 │
+│                    │  YOLO CV Scripts  │                                 │
+│                    │  (Manual Execution)│                                │
+│                    └───────────────────┘                                 │
+│                              │                                           │
+│                    ┌─────────▼─────────┐                                 │
+│                    │   Video Sources   │                                 │
+│                    │  (Prerecorded)    │                                 │
+│                    └───────────────────┘                                 │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
-Counts:
+---
 
-Two-wheelers
+## Technology Stack
 
-Light Motor Vehicles
+### Backend
+| Component | Technology |
+|-----------|------------|
+| API Framework | FastAPI |
+| Database ORM | SQLAlchemy |
+| Database | PostgreSQL (with SQLite fallback) |
+| Authentication | Passlib with bcrypt |
+| Computer Vision | YOLO (Ultralytics), OpenCV |
+| Object Tracking | Custom vehicle tracker |
 
-Heavy Motor Vehicles
+### Frontend
+| Component | Technology |
+|-----------|------------|
+| Framework | React 18 |
+| Build Tool | Vite 5 |
+| Routing | React Router DOM 6 |
+| Charts | Chart.js, Recharts |
+| Maps | Leaflet, React-Leaflet |
+| Icons | Lucide React |
 
-Saves the output to:
+---
 
-vehicle_data.txt
+## Project Structure
 
-<br>
-📌 Generated Output Example
-2,5,1
+```
+IRIS_WEB/
+├── backend/                      # FastAPI backend application
+│   ├── main.py                   # API endpoints and application entry
+│   ├── models.py                 # SQLAlchemy database models
+│   ├── schemas.py                # Pydantic request/response schemas
+│   ├── database.py               # Database connection configuration
+│   ├── config.py                 # Application configuration
+│   ├── seed_database.py          # Initial data seeding script
+│   │
+│   │  # Computer Vision Scripts
+│   ├── vehicle_classifier.py     # Vehicle classification system
+│   ├── vehicle_detector.py       # YOLO detection wrapper
+│   ├── vehicle_tracker.py        # Object tracking logic
+│   ├── prototype_headless.py     # Headless vehicle counting
+│   ├── detect_accident.py        # Accident detection system
+│   │
+│   │  # Signal Timing
+│   ├── traffic_cycle.py          # Signal timing calculator
+│   ├── green_time_simulation.py  # Green time optimization logic
+│   ├── db_helpers.py             # Database helper functions
+│   │
+│   │  # YOLO Models
+│   ├── yolo11x.pt                # Primary YOLO model for vehicles
+│   ├── best.pt                   # Trained model for accidents
+│   │
+│   │  # Test Data
+│   ├── testing.mp4               # Sample test video
+│   ├── video2.mp4                # Additional test video
+│   ├── video211.mp4              # Additional test video
+│   │
+│   ├── accident_evidence/        # Saved accident evidence images
+│   ├── requirements.txt          # Python dependencies
+│   └── .env                      # Environment configuration
+│
+├── frontend/                     # React frontend application
+│   ├── src/
+│   │   ├── App.jsx               # Main application component
+│   │   ├── main.jsx              # Application entry point
+│   │   ├── components/           # Reusable UI components
+│   │   ├── context/              # React context providers
+│   │   ├── layouts/              # Page layout components
+│   │   ├── pages/                # Application pages
+│   │   │   ├── Landing.jsx       # Public landing page
+│   │   │   ├── Login.jsx         # Authentication page
+│   │   │   ├── admin/            # Admin dashboard pages
+│   │   │   │   ├── Dashboard.jsx
+│   │   │   │   ├── LiveTraffic.jsx
+│   │   │   │   ├── SignalControl.jsx
+│   │   │   │   ├── Analytics.jsx
+│   │   │   │   ├── Alerts.jsx
+│   │   │   │   ├── GreenCorridor.jsx
+│   │   │   │   └── Settings.jsx
+│   │   │   └── public/           # Public view pages
+│   │   ├── services/             # API service functions
+│   │   └── styles/               # CSS stylesheets
+│   ├── package.json              # Node.js dependencies
+│   └── vite.config.js            # Vite configuration
+│
+└── version/                      # Legacy prototype files
+```
 
+---
 
-(two-wheelers, LMVs, HMVs)
+## Features
 
-<br>
-⚠️ Important Limitation (Current Version)
+### Admin Dashboard
+- **Dashboard Overview**: Real-time system statistics, active signals, and key metrics
+- **Live Traffic View**: Interactive map with junction monitoring and traffic flow visualization
+- **Signal Control**: Manual and adaptive signal timing management per junction
+- **Analytics**: Historical traffic data, trends, and performance metrics visualization
+- **Alerts Management**: Incident notifications, accident alerts, and system warnings
+- **Green Corridor**: Emergency vehicle priority routing across multiple junctions
+- **Settings**: System configuration and user management
 
-The current prototype supports only one input video and one ROI selection.
+### Public Interface
+- **Landing Page**: Overview of the IRIS system and its capabilities
+- **Public Traffic View**: Limited access to traffic information
 
-Therefore, it generates only one line in vehicle_data.txt.
+### Computer Vision Capabilities
+- **Vehicle Detection**: Real-time detection of vehicles using YOLO
+- **Vehicle Classification**: Categorization into three classes:
+  - Motorcycles / Two-wheelers
+  - Light Motor Vehicles (LMV): cars, SUVs, vans
+  - Heavy Motor Vehicles (HMV): trucks, buses
+- **Accident Detection**: Automated accident detection with confidence scoring
+- **Object Tracking**: Continuous tracking of vehicles across video frames
 
-However, the timing calculator (traffic_cycle.py) requires 4 lines (one for each phase).
+---
 
-<br>
-📝 Step 2: Manually Prepare vehicle_data.txt
+## Computer Vision Scripts
 
-Before running the timer, edit vehicle_data.txt so it contains four lines, like:
+> **Important Note**: The YOLO-based Python scripts currently process **prerecorded video data** stored locally and update specific junction records in the database. The rest of the database is populated with **mock data** for development and demonstration purposes.
 
-2,5,1
-2,5,1
-2,5,1
-2,5,1
+### Vehicle Classification (`vehicle_classifier.py`)
 
+Classifies vehicles in video footage into three categories using YOLO object detection.
 
-or write different values for each phase.
+**Modes:**
+- **Manual Mode**: Interactive ROI selection with visual display
+- **Database Mode**: Fetches ROI and video source from database, runs headlessly
 
-<br>
-🟧 Step 3: Run the Traffic Signal Timer
+**Usage:**
+```bash
+# Manual mode with visual display
+python vehicle_classifier.py
 
-Run:
+# Database mode (headless)
+python vehicle_classifier.py --use-database --junction-id J-001 --phase 1
+```
 
-python traffic_cycle.py
+### Headless Vehicle Detection (`prototype_headless.py`)
 
-✔ This will calculate:
+Runs vehicle detection without GUI for server deployment.
 
-Green time (G)
+**Usage:**
+```bash
+python prototype_headless.py --junction_id J-001 --phase_number 1
+```
 
-Yellow time (Y)
+**What it does:**
+1. Fetches ROI coordinates and video source from database
+2. Processes video frames using YOLO
+3. Tracks and counts vehicles by category
+4. Saves traffic counts to the `traffic_data` table
 
-Red time (R)
+### Accident Detection (`detect_accident.py`)
 
-Clearance % (placeholder)
+Monitors video feeds for accident detection using a trained YOLO model.
 
-<br>
-🛑 Clearance Value Notice
+**Usage:**
+```bash
+python detect_accident.py --junction-id J-002
 
-The Clearance (%) shown in the output is not functional yet.
+# With verbose output
+python detect_accident.py --junction-id J-002 --verbose
+```
 
-It is currently manually set to 80 percent
+**What it does:**
+1. Fetches video source from database for the specified junction
+2. Processes frames through accident detection model (confidence threshold: 0.75)
+3. Saves evidence photos to `accident_evidence/` directory
+4. Creates accident records in the `accidents` table with:
+   - Timestamp of detection
+   - Confidence score
+   - Severity level
+   - Evidence image path
+   - Associated junction and camera
 
-Real clearance calculation logic is not implemented in this version
+### Current Execution Model (Development)
 
-You will see values such as:
+These scripts must be **run manually** from the command line. Each script:
+- Connects to the PostgreSQL database
+- Fetches configuration (ROI, video source) from relevant tables
+- Processes the prerecorded video file
+- Updates the database with results
 
-Clearance (%): 80.00
+---
 
+## Database Schema
 
-Future updates will contain the real computation.
+### Core Tables
 
-<br>
-📂 Files Overview
-versions/<br>
-│── prototype.py              # Vehicle detection + ROI + counting<br>
-│── traffic_cycle.py          # Traffic timer calculator<br>
-│── green_time_simulation.py  # Backend logic for timing<br>
-│── video2.mp4                # Sample test video<br>
-│── vehicle_detector.py       # YOLO detection wrapper<br>
-│── vehicle_tracker.py        # Tracking logic<br>
-│── manual_roi_selector.py    # Interactive ROI selector<br>
-│── config.py                 # Configurations<br>
-│── vehicle_data.txt          # Output data file (1 line, must be edited)<br>
+| Table | Purpose |
+|-------|---------|
+| `users` | User authentication and roles |
+| `junctions` | Traffic junction information with coordinates |
+| `cameras` | Camera configurations per junction |
+| `signal_phases` | Phase configuration with ROI and video source |
+| `signal_timings` | Signal timing configurations |
+| `signal_adjacency` | Junction connectivity for routing |
+| `traffic_data` | Historical vehicle counts per phase |
+| `alerts` | System alerts and notifications |
+| `accidents` | Detected accident records with evidence |
+| `analytics_summary` | Aggregated traffic analytics |
+| `system_stats` | Real-time system statistics |
+| `vehicle_classification` | Cumulative vehicle classification counts |
 
-<br>
-⛔ Current Limitations
+---
 
-Only one ROI and one video per run
+## Installation
 
-Only one line of vehicle data generated
+### Prerequisites
+- Python 3.9+
+- Node.js 18+
+- PostgreSQL 14+ (or SQLite for development)
 
-Must manually duplicate/edit data to create 4-phase input
+### Backend Setup
 
-Clearance value is hard-coded
+```bash
+cd backend
 
-No real-time CCTV input
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
 
-RL-based optimization not added yet
+# Install dependencies
+pip install -r requirements.txt
 
-<br>
-🛣️ Planned Upgrades
+# Install YOLO dependencies
+pip install ultralytics opencv-python
 
-Multi-ROI & automatic multi-phase data generation
+# Configure environment
+# Edit .env file with database credentials
+```
 
-Real CCTV RTSP stream support
+**.env Configuration:**
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/iris_db
+ROBOFLOW_API_KEY=your_roboflow_key
+```
 
-RL-based adaptive traffic control
+### Frontend Setup
 
-Auto lane detection & smart ROI
+```bash
+cd frontend
 
-Real clearance calculation
+# Install dependencies
+npm install
+```
 
-Multi-intersection network optimization
+### Database Initialization
 
-Web dashboard & analytics
+```bash
+cd backend
 
-<br>
+# Run database seeding (creates tables and initial data)
+python seed_database.py
+```
+
+---
+
+## Running the Application
+
+### Start Backend Server
+
+```bash
+cd backend
+python -m uvicorn main:app --reload --port 8000
+```
+
+The API will be available at `http://localhost:8000`
+
+### Start Frontend Development Server
+
+```bash
+cd frontend
+npm run dev
+```
+
+The dashboard will be available at `http://localhost:5173`
+
+### Running CV Scripts (Manual)
+
+```bash
+cd backend
+
+# Vehicle classification for a junction
+python vehicle_classifier.py --use-database --junction-id J-001 --phase 1
+
+# Vehicle counting (headless)
+python prototype_headless.py --junction_id J-001 --phase_number 1
+
+# Accident detection
+python detect_accident.py --junction-id J-002
+```
+
+---
+
+## API Reference
+
+### Authentication
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/token` | POST | User login |
+
+### Junctions
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/junctions` | GET | List all junctions |
+| `/junctions/{id}` | GET | Get specific junction |
+| `/junctions` | POST | Create junction |
+| `/junctions/{id}` | PUT | Update junction |
+| `/junctions/{id}` | DELETE | Delete junction |
+
+### Traffic Data
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/traffic-data` | GET | Get current traffic data |
+| `/traffic-data-record` | POST | Record new traffic data |
+| `/traffic-data-history/{junction_id}` | GET | Get historical data |
+| `/schedule` | GET | Get calculated signal timings |
+
+### Alerts and Accidents
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/alerts` | GET | List alerts |
+| `/alerts` | POST | Create alert |
+| `/alerts/{id}/resolve` | PATCH | Resolve alert |
+| `/accidents` | GET | List detected accidents |
+| `/accidents/{id}` | GET | Get accident details |
+| `/accidents/{id}/resolve` | PATCH | Resolve accident |
+
+### Cameras and Signals
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/cameras` | GET | List cameras |
+| `/cameras/{id}` | GET | Get camera details |
+| `/signal-timings/{junction_id}` | GET | Get signal timings |
+
+---
+
+## Current Limitations
+
+- **Data Source**: CV scripts process prerecorded video files, not live camera feeds
+- **Manual Execution**: YOLO scripts must be run manually from command line
+- **Mock Data**: Most database records are seeded mock data for demonstration
+- **Single Video Processing**: Scripts process one video/junction at a time
+- **No Real-time Updates**: Frontend requires manual refresh to see updated data
+- **Authentication**: Using simplified token-based auth (not production-ready JWT)
+
+---
+
+## Production Roadmap
+
+### Planned Enhancements
+
+1. **Live Camera Integration**
+   - Replace prerecorded video sources with RTSP streams from traffic cameras
+   - Real-time video processing with frame buffering
+
+2. **Automated Script Execution**
+   - Integration with Celery for task queuing
+   - API-triggered CV script execution
+   - Scheduled periodic processing jobs
+
+3. **Real-time Data Updates**
+   - WebSocket implementation for live dashboard updates
+   - Automatic frontend refresh on database changes
+   - Push notifications for alerts and accidents
+
+4. **Enhanced Authentication**
+   - JWT-based authentication with refresh tokens
+   - Role-based access control (RBAC)
+   - API key management for external integrations
+
+5. **Scalability**
+   - Multi-worker Celery deployment
+   - Redis for caching and message brokering
+   - Horizontal scaling for CV processing
+
+6. **Advanced Analytics**
+   - Machine learning for traffic prediction
+   - Reinforcement learning for adaptive signal optimization
+   - Historical trend analysis and reporting
+
+---
+
+## Default Credentials
+
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | admin | admin123 |
+
+---
+
+## License
+
+Copyright (c) 2026 IRIS Development Team. All Rights Reserved.
+
+This software is proprietary and confidential. Unauthorized copying, distribution, or use of this software is strictly prohibited. See the [LICENSE](LICENSE) file for details.
+
+For licensing inquiries or partnership opportunities, please contact the development team.
+
+---
+
+## Contact
+
+For questions or support, contact the IRIS development team.

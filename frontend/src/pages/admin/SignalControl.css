@@ -1,0 +1,948 @@
+/* Corridor Active Banner */
+.corridor-active-banner {
+    background: linear-gradient(135deg, var(--success) 0%, #15803d 100%);
+    border-radius: var(--radius-lg);
+    padding: 14px 20px;
+    margin-bottom: 24px;
+}
+
+.corridor-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: white;
+}
+
+.corridor-banner-content svg {
+    flex-shrink: 0;
+}
+
+.corridor-banner-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.corridor-banner-text strong {
+    font-size: 0.9375rem;
+}
+
+.corridor-banner-text span {
+    font-size: 0.8125rem;
+    opacity: 0.9;
+}
+
+.corridor-active-banner .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.corridor-active-banner .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* In-Corridor Row Styles */
+.junctions-table-card .table tbody tr.in-corridor {
+    background: var(--success-light);
+    border-left: 3px solid var(--success);
+}
+
+.junctions-table-card .table tbody tr.in-corridor.selected {
+    background: linear-gradient(90deg, var(--success-light) 0%, var(--primary-light) 100%);
+}
+
+.corridor-badge {
+    margin-left: 6px;
+    font-size: 0.75rem;
+}
+
+/* Corridor Override Notice */
+.corridor-override-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--success-light) 0%, #dcfce7 100%);
+    border: 1px solid var(--success);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--success);
+}
+
+.corridor-override-notice svg {
+    flex-shrink: 0;
+}
+
+/* Signal Pole Corridor Override */
+.signal-pole.corridor-override {
+    border-color: var(--success);
+    background: var(--success-light);
+}
+
+.signal-pole .direction-tag {
+    font-size: 0.625rem;
+    background: var(--primary);
+    color: white;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 4px;
+}
+
+/* Halted Status Badge */
+.status-badge.halted {
+    background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+    color: white;
+    animation: pulse-halted 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-halted {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.status-badge.corridor {
+    background: linear-gradient(135deg, var(--success) 0%, #15803d 100%);
+    color: white;
+}
+
+/* Location Section */
+.location-section {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    padding: 12px 16px !important;
+    margin-bottom: 16px;
+}
+
+.location-section h4 {
+    margin-bottom: 10px;
+}
+
+.location-info {
+    display: flex;
+    gap: 20px;
+}
+
+.coord-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.coord-label {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.coord-value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: monospace;
+}
+
+.signal-control-grid {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 24px;
+}
+
+.junctions-table-card {
+    overflow: hidden;
+}
+
+.junctions-table-card .table tbody tr {
+    cursor: pointer;
+}
+
+.junctions-table-card .table tbody tr.selected {
+    background: var(--primary-light);
+}
+
+.cycle-time {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Custom Dropdown */
+.custom-dropdown {
+    position: relative;
+}
+
+.dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-transform: capitalize;
+    min-width: 120px;
+}
+
+.dropdown-trigger:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+.dropdown-trigger.default {
+    background: linear-gradient(135deg, var(--warning-light) 0%, #fef3c7 100%);
+    border-color: var(--warning);
+}
+
+.dropdown-trigger.manual {
+    background: linear-gradient(135deg, var(--primary-light) 0%, #dbeafe 100%);
+    border-color: var(--primary);
+}
+
+.dropdown-trigger.adaptive {
+    background: linear-gradient(135deg, var(--success-light) 0%, #dcfce7 100%);
+    border-color: var(--success);
+}
+
+.mode-icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.mode-icon.default {
+    background: var(--warning);
+    box-shadow: 0 0 6px var(--warning);
+}
+
+.mode-icon.manual {
+    background: var(--primary);
+    box-shadow: 0 0 6px var(--primary);
+}
+
+.mode-icon.adaptive {
+    background: var(--success);
+    box-shadow: 0 0 6px var(--success);
+}
+
+.mode-text {
+    flex: 1;
+    text-align: left;
+}
+
+.dropdown-arrow {
+    transition: transform 0.2s ease;
+    color: var(--text-muted);
+}
+
+.dropdown-arrow.open {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    min-width: 200px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-header {
+    padding: 8px 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    text-align: left;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.dropdown-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.dropdown-item.active {
+    background: var(--primary-light);
+}
+
+.dropdown-item .mode-icon {
+    width: 10px;
+    height: 10px;
+}
+
+.dropdown-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dropdown-item-title {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.dropdown-item-desc {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    transition: all var(--transition);
+}
+
+.icon-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.icon-btn.danger:hover {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+/* Junction Config */
+.junction-config {
+    height: fit-content;
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+}
+
+.config-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.total-cycle-badge {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.config-section {
+    margin-bottom: 24px;
+}
+
+.config-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.phases-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.phase-item {
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.phase-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.phase-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Timing Summary */
+.timing-summary {
+    background: var(--bg-tertiary);
+    padding: 12px;
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+}
+
+.timing-info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    padding: 4px 0;
+}
+
+.timing-info-row span {
+    color: var(--text-secondary);
+}
+
+.timing-info-row strong {
+    color: var(--text-primary);
+}
+
+/* Phase Timing Cards */
+.phase-timing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.phase-timing-card {
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    border: 2px solid transparent;
+    transition: all var(--transition);
+}
+
+.phase-timing-card.active-phase {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.phase-timing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.phase-number {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.active-indicator {
+    background: var(--success);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.timing-lights {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.timing-light {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px;
+    border-radius: 6px;
+    background: var(--bg-secondary);
+}
+
+.timing-light .light-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-bottom: 4px;
+    opacity: 0.4;
+}
+
+.timing-light.green .light-icon {
+    background: #22c55e;
+}
+
+.timing-light.yellow .light-icon {
+    background: #eab308;
+}
+
+.timing-light.red .light-icon {
+    background: #ef4444;
+}
+
+.timing-light.active .light-icon {
+    opacity: 1;
+    box-shadow: 0 0 12px currentColor;
+}
+
+.timing-light.green.active .light-icon {
+    box-shadow: 0 0 12px #22c55e;
+}
+
+.timing-light.yellow.active .light-icon {
+    box-shadow: 0 0 12px #eab308;
+}
+
+.timing-light.red.active .light-icon {
+    box-shadow: 0 0 12px #ef4444;
+}
+
+.timing-light .light-time {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.phase-total {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Timer Section - Traffic Signal Simulation */
+.timer-section {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    margin-top: 16px;
+}
+
+.timer-section h4 {
+    color: white !important;
+    margin-bottom: 16px;
+}
+
+.traffic-signal-simulation {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.signal-phases-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.signal-pole {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    border: 2px solid transparent;
+    transition: all var(--transition);
+    min-width: 80px;
+}
+
+.signal-pole.active {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.1);
+}
+
+.signal-header {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.traffic-light-box {
+    background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
+    border-radius: 8px;
+    padding: 8px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 2px solid #4b5563;
+}
+
+.signal-bulb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.signal-bulb.red {
+    background: #450a0a;
+    border: 2px solid #7f1d1d;
+}
+
+.signal-bulb.yellow {
+    background: #422006;
+    border: 2px solid #78350f;
+}
+
+.signal-bulb.green {
+    background: #052e16;
+    border: 2px solid #14532d;
+}
+
+.signal-bulb.on {
+    animation: bulbGlow 1s ease-in-out infinite alternate;
+}
+
+.signal-bulb.red.on {
+    background: #ef4444;
+    border-color: #fca5a5;
+    box-shadow: 0 0 20px #ef4444, 0 0 40px rgba(239, 68, 68, 0.5);
+}
+
+.signal-bulb.yellow.on {
+    background: #eab308;
+    border-color: #fde047;
+    box-shadow: 0 0 20px #eab308, 0 0 40px rgba(234, 179, 8, 0.5);
+}
+
+.signal-bulb.green.on {
+    background: #22c55e;
+    border-color: #86efac;
+    box-shadow: 0 0 20px #22c55e, 0 0 40px rgba(34, 197, 94, 0.5);
+}
+
+.bulb-glow {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+}
+
+@keyframes bulbGlow {
+    from { opacity: 1; }
+    to { opacity: 0.8; }
+}
+
+.signal-timer-display {
+    margin-top: 10px;
+    font-family: 'Courier New', monospace;
+}
+
+.timer-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.timer-value.green {
+    color: #22c55e;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+.timer-value.yellow {
+    color: #eab308;
+    text-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+}
+
+.timer-value.red {
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+.signal-status {
+    margin-top: 8px;
+}
+
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.green {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border: 1px solid #22c55e;
+}
+
+.status-badge.yellow {
+    background: rgba(234, 179, 8, 0.2);
+    color: #eab308;
+    border: 1px solid #eab308;
+}
+
+.status-badge.red {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid #ef4444;
+}
+
+/* Cycle Progress Info */
+.cycle-progress-info {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius);
+    padding: 12px;
+}
+
+.current-cycle-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.cycle-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.cycle-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+}
+
+.phase-progress-bar {
+    display: flex;
+    gap: 4px;
+}
+
+.progress-segment {
+    flex: 1;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    transition: all var(--transition);
+}
+
+.progress-segment.completed {
+    background: rgba(34, 197, 94, 0.3);
+    color: #22c55e;
+}
+
+.progress-segment.active {
+    transform: scale(1.05);
+    font-weight: 700;
+}
+
+.progress-segment.active.green {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+}
+
+.progress-segment.active.yellow {
+    background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+    color: white;
+    box-shadow: 0 0 12px rgba(234, 179, 8, 0.5);
+}
+
+.progress-segment.active.red {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+.config-actions {
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Modal Tweaks */
+.modal-lg {
+    max-width: 600px;
+}
+
+.modal-manual {
+    max-width: 500px;
+}
+
+.manual-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.timing-inputs-section {
+    margin-top: 20px;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.timing-inputs-section h4 {
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+}
+
+.manual-green-inputs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.light-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.light-dot.green {
+    background: #22c55e;
+}
+
+.light-dot.yellow {
+    background: #eab308;
+}
+
+.light-dot.red {
+    background: #ef4444;
+}
+
+/* Calculated Times */
+.calculated-times {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.calc-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+}
+
+.calc-item span {
+    color: var(--text-secondary);
+}
+
+.calc-item strong {
+    color: var(--text-primary);
+}
+
+.calc-item.total {
+    grid-column: 1 / -1;
+    background: var(--primary-light);
+}
+
+.calc-item.total strong {
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.form-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.form-section h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.phases-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 1024px) {
+    .signal-control-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .junction-config {
+        order: -1;
+    }
+
+    .phase-timing-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .manual-green-inputs {
+        grid-template-columns: 1fr;
+    }
+
+    .calculated-times {
+        grid-template-columns: 1fr;
+    }
+}

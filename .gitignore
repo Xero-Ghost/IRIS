@@ -1,0 +1,69 @@
+# Dependencies
+frontend/node_modules/
+.pnp/
+.pnp.js
+
+# Build output
+frontend/dist/
+build/
+out/
+.vite/
+
+# Environment files
+backend/.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+backend/__pycache__/
+*.pyc
+*.pyo
+__pycache__/
+
+# Database
+backend/sql_app.db
+
+# Editor/IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# OS files
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Testing
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+*.tsbuildinfo
+
+# Misc
+*.local
+.vercel
+.netlify
+
+# Old directories (cleanup)
+version/
